@@ -8,8 +8,9 @@ load_dotenv(os.path.join(basedir, '.env'))
 
 def normalize_db_url(url: str | None) -> str:
     """Normalize database URL for SQLAlchemy compatibility (e.g., postgres:// -> postgresql://)."""
+    default_url = "postgresql://localhost/ephemeral_chat_db"
     if not url:
-        return "postgresql://localhost/ephemeral_chat_db"
+        return default_url
     
     url = str(url).strip()
     # Strip surrounding single or double quotes if copied with quotes
@@ -17,13 +18,21 @@ def normalize_db_url(url: str | None) -> str:
         url = url[1:-1].strip()
 
     if not url:
-        return "postgresql://localhost/ephemeral_chat_db"
+        return default_url
 
     if url.startswith("postgres://"):
         url = url.replace("postgres://", "postgresql://", 1)
     if "sqlite" in url.lower():
         raise ValueError("SQLite is strictly prohibited. Use PostgreSQL exclusively.")
-    return url
+
+    # Validate that SQLAlchemy make_url can parse it; if not, return safe fallback
+    try:
+        import sqlalchemy.engine.url as sa_url
+        sa_url.make_url(url)
+        return url
+    except Exception as e:
+        print(f"[Config Notice] Invalid DATABASE_URL format: '{url}'. Falling back to default URL. ({e})")
+        return default_url
 
 
 class Config:
