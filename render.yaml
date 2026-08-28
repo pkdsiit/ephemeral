@@ -2,7 +2,7 @@ services:
   - type: web
     name: ephemeral-chat
     env: python
-    buildCommand: pip install -r requirements.txt && flask db upgrade
+    buildCommand: pip install -r requirements.txt && python build.py
     startCommand: gunicorn --config gunicorn_config.py wsgi:app
     envVars:
       - key: FLASK_ENV
