@@ -89,6 +89,11 @@ def create_app(config_name: str = None) -> Flask:
     # Register error handlers
     register_error_handlers(app)
 
+    # Exempt API JSON endpoints from CSRF (protected by session auth, login_required & rate limiter)
+    for endpoint, view in list(app.view_functions.items()):
+        if 'api' in endpoint:
+            ext.csrf.exempt(view)
+
     # Register CLI commands
     register_cli_commands(app)
 
