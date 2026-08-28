@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}Error {{ status_code | default(404) }}{% endblock %}
+
+{% block content %}
+<div class="container-narrow" style="text-align:center; padding-top:4rem;">
+  <div style="font-size:4rem; font-weight:800; background:linear-gradient(135deg, var(--primary), var(--danger)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin-bottom:1rem;">
+    {{ status_code | default(404) }}
+  </div>
+  <h2 style="margin-bottom:1rem;">{{ error_message | default("Something went wrong.") }}</h2>
+  <p style="color:var(--text-muted); margin-bottom:2rem;">The request could not be completed or the resource is unavailable.</p>
+  <a href="{{ url_for('main.index') if not current_user.is_authenticated else url_for('main.dashboard') }}" class="btn btn-primary">
+    Return to Safe Ground
+  </a>
+</div>
+{% endblock %}

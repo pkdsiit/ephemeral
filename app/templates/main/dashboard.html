@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div style="margin-bottom:2rem;">
+  <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
+    <div>
+      <h1 style="font-size:1.8rem; font-weight:700;">Welcome back, @{{ user.username }}</h1>
+      <p style="color:var(--text-muted); font-size:0.95rem;">Here is your private communications hub</p>
+    </div>
+    <div style="display:flex; gap:0.75rem;">
+      <a href="{{ url_for('users.search_page') }}" class="btn btn-primary">
+        <span>🔍 Search Users</span>
+      </a>
+      <a href="{{ url_for('chat.index') }}" class="btn btn-secondary">
+        <span>💬 View Chats</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="grid-2" style="margin-bottom:2rem;">
+  <!-- Recent Chats Card -->
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">Recent Conversations</h2>
+      <a href="{{ url_for('chat.index') }}" style="font-size:0.85rem;">View All ({{ total_conversations_count }})</a>
+    </div>
+
+    {% if recent_conversations %}
+      <div style="display:flex; flex-direction:column; gap:0.5rem;">
+        {% for conv in recent_conversations %}
+          <a href="{{ url_for('chat.conversation_view', conversation_id=conv.id) }}" class="chat-item" style="border-radius:var(--radius-md); padding:0.6rem 0.8rem;">
+            <img src="{{ conv.other_user.avatar_url or url_for('static', filename='images/default-avatar.svg') }}" class="chat-item-avatar" alt="Avatar">
+            <div class="chat-item-info">
+              <div class="chat-item-top">
+                <span class="chat-item-name">@{{ conv.other_user.username }}</span>
+                {% if conv.unread_count > 0 %}
+                  <span class="chat-item-badge">{{ conv.unread_count }}</span>
+                {% endif %}
+              </div>
+              <div class="chat-item-preview">
+                {% if conv.last_message %}
+                  {{ conv.last_message.content }}
+                {% else %}
+                  <span style="font-style:italic;">No messages yet</span>
+                {% endif %}
+              </div>
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div style="text-align:center; padding:2rem 1rem; color:var(--text-muted);">
+        <p style="margin-bottom:1rem;">No conversations started yet.</p>
+        <a href="{{ url_for('users.search_page') }}" class="btn btn-sm btn-primary">Discover & Message Users</a>
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Public Chat Rooms Card -->
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">Public Square</h2>
+      <span class="badge badge-accent">Live Rooms</span>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:0.75rem;">
+      {% for room in public_rooms %}
+        <div style="background:var(--bg-input); padding:1rem; border-radius:var(--radius-md); display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <h4 style="font-size:1rem; font-weight:600; margin-bottom:0.2rem;"># {{ room.name }}</h4>
+            <p style="font-size:0.8rem; color:var(--text-muted);">{{ room.description }}</p>
+          </div>
+          <a href="{{ url_for('public_chat.room_view', room_code=room.code) }}" class="btn btn-sm btn-secondary">Join</a>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<!-- Dating Section Preview -->
+<div class="card" style="margin-bottom:2rem;">
+  <div class="card-header">
+    <div style="display:flex; align-items:center; gap:0.6rem;">
+      <span style="font-size:1.4rem;">✨</span>
+      <h2 class="card-title">Dating & Matchmaking</h2>
+    </div>
+    <div>
+      {% if user.dating_profile and user.dating_profile.enabled %}
+        <a href="{{ url_for('dating.preferences') }}" class="btn btn-sm btn-secondary">Edit Preferences</a>
+        <a href="{{ url_for('dating.matches') }}" class="btn btn-sm btn-primary" style="margin-left:0.4rem;">Explore Matches</a>
+      {% else %}
+        <a href="{{ url_for('dating.preferences') }}" class="btn btn-sm btn-primary">Enable Dating</a>
+      {% endif %}
+    </div>
+  </div>
+
+  {% if user.dating_profile and user.dating_profile.enabled %}
+    {% if dating_matches %}
+      <div class="grid-3">
+        {% for match in dating_matches %}
+          <div class="match-card">
+            <img src="{{ match.avatar_url or url_for('static', filename='images/default-avatar.svg') }}" class="match-avatar" alt="Avatar">
+            <div class="match-body">
+              <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:0.4rem;">
+                <h4 style="font-size:1.05rem; font-weight:700;">@{{ match.username }}</h4>
+                <span class="badge badge-accent">{{ match.compatibility_score }}% Match</span>
+              </div>
+              <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:0.6rem;">
+                Age {{ match.age }}{% if match.gender %} • {{ match.gender|capitalize }}{% endif %}
+              </p>
+              
+              <div class="interest-tags">
+                {% for tag in match.interests[:4] %}
+                  <span class="interest-tag {% if tag in match.shared_interests %}shared{% endif %}">{{ tag }}</span>
+                {% endfor %}
+              </div>
+
+              <div style="margin-top:auto; display:flex; gap:0.5rem; padding-top:0.75rem;">
+                <a href="{{ url_for('chat.chat_with_user', username=match.username) }}" class="btn btn-sm btn-primary btn-block">Chat</a>
+                <a href="{{ url_for('users.view_user_profile', username=match.username) }}" class="btn btn-sm btn-secondary">Profile</a>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div style="text-align:center; padding:1.5rem; color:var(--text-muted);">
+        <p>No new compatible matches found right now. Try broadening your age or interest preferences!</p>
+      </div>
+    {% endif %}
+  {% else %}
+    <div style="padding:1.5rem; text-align:center;">
+      <h3 style="margin-bottom:0.5rem; font-size:1.15rem;">Private, Opt-In Dating</h3>
+      <p style="color:var(--text-muted); max-width:600px; margin:0 auto 1.5rem; font-size:0.9rem;">
+        Find meaningful connections based purely on compatibility and shared hobbies without exposing phone numbers, real names, or emails.
+      </p>
+      <a href="{{ url_for('dating.preferences') }}" class="btn btn-primary">Setup Dating Preferences</a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block title %}Account Settings{% endblock %}
+
+{% block content %}
+<div class="container-narrow" style="max-width:600px;">
+  <h1 style="font-size:1.8rem; font-weight:700; margin-bottom:1.5rem;">Account Settings</h1>
+
+  <!-- Update Username Card -->
+  <div class="card" style="margin-bottom:1.5rem;">
+    <h2 style="font-size:1.25rem; font-weight:600; margin-bottom:0.4rem;">Change Username</h2>
+    <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:1.25rem;">
+      Your username is your unique public handle. Changing it preserves all your existing chats and matches.
+    </p>
+
+    <form method="POST" action="{{ url_for('users.update_username') }}">
+      {{ username_form.hidden_tag() }}
+
+      <div class="form-group">
+        {{ username_form.username.label(class="form-label") }}
+        <div style="position:relative;">
+          <span style="position:absolute; left:1rem; top:0.75rem; color:var(--text-dim); font-weight:bold;">@</span>
+          {{ username_form.username(class="form-control" + (" is-invalid" if username_form.username.errors else ""), style="padding-left:2.2rem;") }}
+        </div>
+        <div class="form-text">Allowed: letters, numbers, and underscores (3–30 characters).</div>
+        {% for error in username_form.username.errors %}
+          <div class="invalid-feedback">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <button type="submit" class="btn btn-primary">
+        Update Username
+      </button>
+    </form>
+  </div>
+
+  <!-- Change Password Card -->
+  <div class="card" style="margin-bottom:1.5rem;">
+    <h2 style="font-size:1.25rem; font-weight:600; margin-bottom:0.4rem;">Change Password</h2>
+    <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:1.25rem;">
+      Update your secure password for sign-in.
+    </p>
+
+    <form method="POST" action="{{ url_for('users.update_password') }}">
+      {{ password_form.hidden_tag() }}
+
+      <div class="form-group">
+        {{ password_form.current_password.label(class="form-label") }}
+        {{ password_form.current_password(class="form-control" + (" is-invalid" if password_form.current_password.errors else "")) }}
+        {% for error in password_form.current_password.errors %}
+          <div class="invalid-feedback">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <div class="form-group">
+        {{ password_form.new_password.label(class="form-label") }}
+        {{ password_form.new_password(class="form-control" + (" is-invalid" if password_form.new_password.errors else "")) }}
+        <div class="form-text">Minimum 8 characters.</div>
+        {% for error in password_form.new_password.errors %}
+          <div class="invalid-feedback">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <div class="form-group">
+        {{ password_form.confirm_new_password.label(class="form-label") }}
+        {{ password_form.confirm_new_password(class="form-control" + (" is-invalid" if password_form.confirm_new_password.errors else "")) }}
+        {% for error in password_form.confirm_new_password.errors %}
+          <div class="invalid-feedback">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <button type="submit" class="btn btn-primary">
+        Save New Password
+      </button>
+    </form>
+  </div>
+
+  <!-- Delete Account Danger Zone -->
+  <div class="card" style="border-color:rgba(239, 68, 68, 0.4); background:rgba(239, 68, 68, 0.04);">
+    <h2 style="font-size:1.25rem; font-weight:600; color:#f87171; margin-bottom:0.4rem;">Danger Zone</h2>
+    <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:1.25rem;">
+      Permanently delete your account, active chats, dating profile, and all associated media from our database.
+    </p>
+
+    <form method="POST" action="{{ url_for('users.delete_account') }}" onsubmit="return confirm('Are you absolutely sure you want to permanently delete your account? This action cannot be undone.');">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <button type="submit" class="btn btn-danger">
+        Delete My Account Permanently
+      </button>
+    </form>
+  </div>
+</div>
+{% endblock %}

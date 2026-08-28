@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}Admin — Users Management{% endblock %}
+
+{% block content %}
+<div>
+  <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; margin-bottom:1.5rem;">
+    <div>
+      <a href="{{ url_for('admin.dashboard') }}" style="font-size:0.85rem; color:var(--text-muted);">← Admin Dashboard</a>
+      <h1 style="font-size:1.8rem; font-weight:700; margin-top:0.25rem;">User Management</h1>
+    </div>
+
+    <form method="GET" action="{{ url_for('admin.users_list') }}" style="display:flex; gap:0.5rem;">
+      <input type="text" name="q" value="{{ search }}" class="form-control" placeholder="Search username/email..." style="width:240px;">
+      <button type="submit" class="btn btn-secondary">Search</button>
+    </form>
+  </div>
+
+  <div class="card" style="padding:0; overflow:hidden;">
+    <table style="width:100%; border-collapse:collapse; text-align:left; font-size:0.9rem;">
+      <thead>
+        <tr style="background:var(--bg-input); border-bottom:1px solid var(--border-color); color:var(--text-muted);">
+          <th style="padding:0.75rem 1rem;">User</th>
+          <th style="padding:0.75rem 1rem;">Email</th>
+          <th style="padding:0.75rem 1rem;">Joined</th>
+          <th style="padding:0.75rem 1rem;">Status</th>
+          <th style="padding:0.75rem 1rem; text-align:right;">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for u in pagination.items %}
+          <tr style="border-bottom:1px solid var(--border-color);">
+            <td style="padding:0.75rem 1rem; font-weight:600;">
+              @{{ u.username }}
+              {% if u.is_admin %}<span class="badge badge-accent" style="margin-left:0.25rem;">Admin</span>{% endif %}
+            </td>
+            <td style="padding:0.75rem 1rem; color:var(--text-muted);">{{ u.email }}</td>
+            <td style="padding:0.75rem 1rem; color:var(--text-dim);">{{ u.created_at.strftime('%Y-%m-%d') }}</td>
+            <td style="padding:0.75rem 1rem;">
+              {% if u.is_suspended %}
+                <span class="badge badge-danger">Suspended</span>
+              {% else %}
+                <span class="badge badge-success">Active</span>
+              {% endif %}
+            </td>
+            <td style="padding:0.75rem 1rem; text-align:right;">
+              {% if u.id != current_user.id %}
+                <form method="POST" action="{{ url_for('admin.toggle_suspend', user_id=u.id) }}" style="display:inline;">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                  {% if u.is_suspended %}
+                    <button type="submit" class="btn btn-sm btn-secondary">Reinstate</button>
+                  {% else %}
+                    <button type="submit" class="btn btn-sm btn-danger">Suspend</button>
+                  {% endif %}
+                </form>
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

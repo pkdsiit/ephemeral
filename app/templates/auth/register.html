@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}Create Account{% endblock %}
+
+{% block content %}
+<div class="container-narrow">
+  <div class="card">
+    <div style="text-align:center; margin-bottom:1.5rem;">
+      <h2 style="font-size:1.6rem; font-weight:700; margin-bottom:0.4rem;">Create Account</h2>
+      <p style="color:var(--text-muted); font-size:0.9rem;">Join the privacy-first ephemeral network</p>
+    </div>
+
+    <form method="POST" action="{{ url_for('auth.register') }}">
+      {{ form.hidden_tag() }}
+
+      <div class="form-group">
+        {{ form.email.label(class="form-label") }}
+        {{ form.email(class="form-control" + (" is-invalid" if form.email.errors else ""), placeholder="you@email.com", autofocus=True) }}
+        <div class="form-text">Your email is strictly private and never shown to other users.</div>
+        {% for error in form.email.errors %}
+          <div class="invalid-feedback">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <div class="form-group">
+        {{ form.username.label(class="form-label") }}
+        <div style="position:relative;">
+          <span style="position:absolute; left:1rem; top:0.75rem; color:var(--text-dim); font-weight:bold;">@</span>
+          {{ form.username(class="form-control" + (" is-invalid" if form.username.errors else ""), style="padding-left:2.2rem;", placeholder="your_unique_name") }}
+        </div>
+        <div class="form-text">3-30 characters: letters, numbers, and underscores.</div>
+        {% for error in form.username.errors %}
+          <div class="invalid-feedback">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <div class="form-group">
+        {{ form.password.label(class="form-label") }}
+        {{ form.password(class="form-control" + (" is-invalid" if form.password.errors else ""), placeholder="••••••••") }}
+        <div class="form-text">Minimum 8 characters.</div>
+        {% for error in form.password.errors %}
+          <div class="invalid-feedback">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <div class="form-group">
+        {{ form.confirm_password.label(class="form-label") }}
+        {{ form.confirm_password(class="form-control" + (" is-invalid" if form.confirm_password.errors else ""), placeholder="••••••••") }}
+        {% for error in form.confirm_password.errors %}
+          <div class="invalid-feedback">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-block" style="padding:0.75rem; margin-top:1rem;">
+        Create My Account
+      </button>
+    </form>
+
+    <div style="margin-top:1.5rem; text-align:center; border-top:1px solid var(--border-color); padding-top:1.25rem; font-size:0.9rem; color:var(--text-muted);">
+      Already have an account? <a href="{{ url_for('auth.login') }}" style="font-weight:600;">Sign in here</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

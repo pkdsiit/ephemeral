@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block title %}Connections & Friends{% endblock %}
+
+{% block content %}
+<div style="max-width:800px; margin:0 auto;">
+  <div style="margin-bottom:1.5rem;">
+    <h1 style="font-size:1.8rem; font-weight:700; margin-bottom:0.3rem;">Connections & Friends</h1>
+    <p style="color:var(--text-muted); font-size:0.9rem;">Manage your accepted connections, requests, and blocked users.</p>
+  </div>
+
+  <!-- Incoming Requests -->
+  {% if pending_received %}
+    <div class="card" style="margin-bottom:1.5rem; border-color:rgba(99, 102, 241, 0.4);">
+      <div class="card-header">
+        <h2 class="card-title" style="color:var(--primary);">Pending Connection Requests ({{ pending_received|length }})</h2>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:0.75rem;">
+        {% for req in pending_received %}
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.75rem; background:var(--bg-input); padding:0.75rem 1rem; border-radius:var(--radius-md);">
+            <div style="display:flex; align-items:center; gap:0.75rem;">
+              <img src="{{ url_for('media.get_avatar', user_id=req.requester.id) }}" class="user-avatar-tiny" alt="Avatar">
+              <div>
+                <span style="font-weight:600;">@{{ req.requester.username }}</span>
+                <span style="font-size:0.8rem; color:var(--text-muted); display:block;">Sent {{ req.created_at.strftime('%b %d') }}</span>
+              </div>
+            </div>
+            <div style="display:flex; gap:0.5rem;">
+              <button class="btn btn-sm btn-primary" onclick="acceptFriend('{{ req.id }}')">Accept</button>
+              <button class="btn btn-sm btn-secondary" onclick="rejectFriend('{{ req.id }}')">Decline</button>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+
+  <!-- Friends List -->
+  <div class="card" style="margin-bottom:1.5rem;">
+    <div class="card-header">
+      <h2 class="card-title">Connected Friends ({{ friends|length }})</h2>
+      <a href="{{ url_for('users.search_page') }}" class="btn btn-sm btn-primary">+ Find People</a>
+    </div>
+
+    {% if friends %}
+      <div style="display:flex; flex-direction:column; gap:0.75rem;">
+        {% for friend in friends %}
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.75rem; padding:0.75rem; border-radius:var(--radius-md); background:var(--bg-input);">
+            <div style="display:flex; align-items:center; gap:0.75rem;">
+              <img src="{{ url_for('media.get_avatar', user_id=friend.id) }}" class="user-avatar-tiny" alt="Avatar">
+              <div>
+                <h4 style="font-size:0.95rem; font-weight:600;">@{{ friend.username }}</h4>
+                <p style="font-size:0.8rem; color:var(--text-muted);">{{ friend.display_name or friend.username }}</p>
+              </div>
+            </div>
+            <div style="display:flex; gap:0.5rem;">
+              <a href="{{ url_for('chat.chat_with_user', username=friend.username) }}" class="btn btn-sm btn-primary">💬 Message</a>
+              <a href="{{ url_for('users.view_user_profile', username=friend.username) }}" class="btn btn-sm btn-secondary">Profile</a>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div style="text-align:center; padding:2rem 1rem; color:var(--text-muted);">
+        <p>No connected friends yet. Search for users by @username to connect.</p>
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Blocked Users -->
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">Blocked Users ({{ blocked_list|length }})</h2>
+    </div>
+    {% if blocked_list %}
+      <div style="display:flex; flex-direction:column; gap:0.5rem;">
+        {% for b in blocked_list %}
+          <div style="display:flex; justify-content:space-between; align-items:center; padding:0.6rem 0.8rem; background:var(--bg-input); border-radius:var(--radius-md);">
+            <span style="font-weight:500;">@{{ b.blocked.username }}</span>
+            <button class="btn btn-sm btn-secondary" onclick="unblockUser('{{ b.blocked_id }}')">Unblock</button>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p style="color:var(--text-dim); font-size:0.85rem;">You have not blocked any users.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  async function acceptFriend(id) {
+    const resp = await fetchWithCsrf(`/api/friends/${id}/accept`, { method: 'POST' });
+    if (resp.ok) window.location.reload();
+  }
+  async function rejectFriend(id) {
+    const resp = await fetchWithCsrf(`/api/friends/${id}/reject`, { method: 'POST' });
+    if (resp.ok) window.location.reload();
+  }
+  async function unblockUser(userId) {
+    const resp = await fetchWithCsrf(`/api/users/${userId}/unblock`, { method: 'POST' });
+    if (resp.ok) window.location.reload();
+  }
+</script>
+{% endblock %}

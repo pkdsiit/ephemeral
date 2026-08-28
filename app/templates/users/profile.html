@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}Your Profile{% endblock %}
+
+{% block content %}
+<div class="container-narrow" style="max-width:540px;">
+  <div class="card">
+    <div style="text-align:center; margin-bottom:1.5rem;">
+      <div style="position:relative; display:inline-block; margin-bottom:1rem;">
+        <img src="{{ url_for('media.get_avatar', user_id=current_user.id) }}" alt="Avatar" style="width:100px; height:100px; border-radius:var(--radius-full); object-fit:cover; border:3px solid var(--primary);">
+        {% if current_user.avatar_path %}
+          <form method="POST" action="{{ url_for('users.delete_avatar') }}" style="display:inline;">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" class="btn btn-sm btn-danger" style="position:absolute; bottom:0; right:-10px; border-radius:var(--radius-full); padding:2px 8px; font-size:0.75rem;" title="Remove Photo">
+              ✕
+            </button>
+          </form>
+        {% endif %}
+      </div>
+      <h2 style="font-size:1.4rem; font-weight:700;">@{{ current_user.username }}</h2>
+      <p style="color:var(--text-muted); font-size:0.85rem;">Member since {{ current_user.created_at.strftime('%B %Y') }}</p>
+    </div>
+
+    <form method="POST" action="{{ url_for('users.profile') }}" enctype="multipart/form-data">
+      {{ form.hidden_tag() }}
+
+      <div class="form-group">
+        {{ form.display_name.label(class="form-label") }}
+        {{ form.display_name(class="form-control", placeholder="Display Name (optional)") }}
+        {% for error in form.display_name.errors %}
+          <div class="invalid-feedback">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <div class="form-group">
+        {{ form.bio.label(class="form-label") }}
+        {{ form.bio(class="form-control", rows=3, placeholder="Tell others a bit about yourself...") }}
+        {% for error in form.bio.errors %}
+          <div class="invalid-feedback">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <div class="form-group">
+        {{ form.avatar.label(class="form-label") }}
+        {{ form.avatar(class="form-control") }}
+        <div class="form-text">JPEG, PNG, or WebP. EXIF metadata will be automatically stripped.</div>
+        {% for error in form.avatar.errors %}
+          <div class="invalid-feedback">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-block" style="padding:0.75rem;">
+        Save Changes
+      </button>
+    </form>
+
+    <div style="margin-top:1.5rem; text-align:center; border-top:1px solid var(--border-color); padding-top:1rem;">
+      <a href="{{ url_for('users.settings') }}" style="font-size:0.9rem;">Account Settings (Username & Password) →</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

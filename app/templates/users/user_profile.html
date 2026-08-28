@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+
+{% block title %}@{{ user.username }}'s Profile{% endblock %}
+
+{% block content %}
+<div class="container-narrow" style="max-width:540px;">
+  <div class="card">
+    <div style="text-align:center; margin-bottom:1.5rem;">
+      <img src="{{ url_for('media.get_avatar', user_id=user.id) }}" alt="Avatar" style="width:100px; height:100px; border-radius:var(--radius-full); object-fit:cover; border:3px solid var(--primary); margin-bottom:0.75rem;">
+      <h2 style="font-size:1.5rem; font-weight:700;">@{{ user.username }}</h2>
+      {% if user.display_name and user.display_name != user.username %}
+        <p style="color:var(--text-muted); font-size:1rem;">{{ user.display_name }}</p>
+      {% endif %}
+      <p style="color:var(--text-dim); font-size:0.8rem; margin-top:0.25rem;">Joined {{ user.created_at.strftime('%B %Y') }}</p>
+    </div>
+
+    {% if user.bio %}
+      <div style="background:var(--bg-input); padding:1rem; border-radius:var(--radius-md); margin-bottom:1.5rem; font-size:0.95rem; line-height:1.5;">
+        {{ user.bio }}
+      </div>
+    {% endif %}
+
+    <!-- Action Buttons -->
+    <div style="display:flex; flex-direction:column; gap:0.75rem; margin-bottom:1.5rem;">
+      {% if not is_blocked and not is_blocked_by %}
+        <a href="{{ url_for('chat.chat_with_user', username=user.username) }}" class="btn btn-primary btn-block">
+          💬 Start Ephemeral Chat
+        </a>
+
+        {% if not friendship %}
+          <button type="button" class="btn btn-secondary btn-block" onclick="sendDatingConnectionRequest('{{ user.id }}', '{{ user.username }}', this)">
+            ➕ Send Connection Request
+          </button>
+        {% elif friendship.status == 'PENDING' and friendship.requester_id == current_user.id %}
+          <button class="btn btn-secondary btn-block" disabled>Request Pending ⏳</button>
+        {% elif friendship.status == 'ACCEPTED' %}
+          <button class="btn btn-secondary btn-block" disabled>Connected Friend ✓</button>
+        {% endif %}
+      {% else %}
+        <div class="alert alert-danger" style="text-align:center;">
+          Communication is disabled due to user block settings.
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Safety & Moderation Controls -->
+    <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--border-color); padding-top:1rem; font-size:0.85rem;">
+      {% if is_blocked %}
+        <button type="button" class="btn btn-sm btn-secondary" onclick="unblockUser('{{ user.id }}')">
+          Unblock @{{ user.username }}
+        </button>
+      {% else %}
+        <button type="button" class="btn btn-sm btn-danger" onclick="blockUser('{{ user.id }}', '{{ user.username }}')">
+          🚫 Block User
+        </button>
+      {% endif %}
+
+      <button type="button" class="btn btn-sm btn-secondary" onclick="document.getElementById('report-modal').classList.add('open')">
+        ⚠️ Report Abuse
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Report Abuse Modal -->
+<div class="modal-backdrop" id="report-modal">
+  <div class="modal-dialog">
+    <div class="modal-header">
+      <h3 style="font-size:1.1rem; font-weight:700;">Report User @{{ user.username }}</h3>
+      <button class="modal-close" onclick="document.getElementById('report-modal').classList.remove('open')">&times;</button>
+    </div>
+    
+    <div class="form-group">
+      <label class="form-label">Reason for report</label>
+      <input type="text" id="report-reason" class="form-control" placeholder="Harassment, inappropriate content, spam, etc.">
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Additional Details (optional)</label>
+      <textarea id="report-details" class="form-control" rows="3" placeholder="Provide any relevant context..."></textarea>
+    </div>
+
+    <div style="display:flex; justify-content:flex-end; gap:0.75rem;">
+      <button type="button" class="btn btn-secondary" onclick="document.getElementById('report-modal').classList.remove('open')">Cancel</button>
+      <button type="button" class="btn btn-danger" onclick="submitUserReport('{{ user.id }}')">Submit Report</button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  async function blockUser(userId, username) {
+    if (!confirm(`Are you sure you want to block @${username}? You will not be able to message each other.`)) return;
+    try {
+      const resp = await fetchWithCsrf(`/api/users/${userId}/block`, { method: 'POST' });
+      if (resp.ok) {
+        window.location.reload();
+      } else {
+        alert("Failed to block user.");
+      }
+    } catch(err) {
+      console.error(err);
+    }
+  }
+
+  async function unblockUser(userId) {
+    try {
+      const resp = await fetchWithCsrf(`/api/users/${userId}/unblock`, { method: 'POST' });
+      if (resp.ok) {
+        window.location.reload();
+      }
+    } catch(err) {
+      console.error(err);
+    }
+  }
+
+  async function submitUserReport(userId) {
+    const reason = document.getElementById('report-reason').value.trim();
+    const details = document.getElementById('report-details').value.trim();
+    if (!reason) {
+      alert("Please provide a reason.");
+      return;
+    }
+
+    try {
+      const resp = await fetchWithCsrf(`/api/users/${userId}/report`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reason: reason, details: details })
+      });
+      if (resp.ok) {
+        alert("Report submitted to moderators.");
+        document.getElementById('report-modal').classList.remove('open');
+      } else {
+        const data = await resp.json();
+        alert(data.error || "Failed to submit report.");
+      }
+    } catch(err) {
+      console.error(err);
+    }
+  }
+</script>
+{% endblock %}

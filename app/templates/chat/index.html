@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}Your Conversations{% endblock %}
+
+{% block content %}
+<div style="max-width:800px; margin:0 auto;">
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+    <div>
+      <h1 style="font-size:1.6rem; font-weight:700;">Private Conversations</h1>
+      <p style="color:var(--text-muted); font-size:0.85rem;">All messages automatically self-destruct after 7 days</p>
+    </div>
+    <a href="{{ url_for('users.search_page') }}" class="btn btn-primary">
+      <span>+ New Conversation</span>
+    </a>
+  </div>
+
+  <div class="card" style="padding:0.5rem;">
+    {% if conversations %}
+      <div style="display:flex; flex-direction:column;">
+        {% for conv in conversations %}
+          <a href="{{ url_for('chat.conversation_view', conversation_id=conv.id) }}" class="chat-item" style="border-radius:var(--radius-sm);">
+            <img src="{{ conv.other_user.avatar_url or url_for('static', filename='images/default-avatar.svg') }}" class="chat-item-avatar" alt="Avatar">
+            <div class="chat-item-info">
+              <div class="chat-item-top">
+                <span class="chat-item-name">@{{ conv.other_user.username }}</span>
+                {% if conv.unread_count > 0 %}
+                  <span class="chat-item-badge">{{ conv.unread_count }}</span>
+                {% endif %}
+              </div>
+              <div class="chat-item-preview">
+                {% if conv.last_message %}
+                  {{ conv.last_message.content }}
+                {% else %}
+                  <span style="font-style:italic;">No messages yet</span>
+                {% endif %}
+              </div>
+            </div>
+            <div style="display:flex; align-items:center; gap:0.5rem;">
+              <span class="chat-item-time">{{ conv.last_message_at | string | truncate(16, True, '') }}</span>
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div style="text-align:center; padding:3rem 1.5rem; color:var(--text-muted);">
+        <div style="font-size:3rem; margin-bottom:1rem;">💬</div>
+        <h3 style="margin-bottom:0.5rem; color:var(--text-main);">No Conversations Yet</h3>
+        <p style="margin-bottom:1.5rem; font-size:0.9rem;">Find someone by their username to start private, ephemeral messaging.</p>
+        <a href="{{ url_for('users.search_page') }}" class="btn btn-primary">Search Users by @username</a>
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

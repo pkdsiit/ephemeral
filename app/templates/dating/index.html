@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}Dating Suggestions{% endblock %}
+
+{% block content %}
+<div>
+  <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; margin-bottom:1.5rem;">
+    <div>
+      <h1 style="font-size:1.8rem; font-weight:700;">Compatible Dating Matches</h1>
+      <p style="color:var(--text-muted); font-size:0.9rem;">
+        Suggested connections matching your age criteria and shared hobbies
+      </p>
+    </div>
+    <div style="display:flex; gap:0.5rem;">
+      <a href="{{ url_for('dating.preferences') }}" class="btn btn-secondary">
+        ⚙ Edit Preferences
+      </a>
+    </div>
+  </div>
+
+  {% if matches %}
+    <div class="grid-3">
+      {% for match in matches %}
+        <div class="match-card" id="match-card-{{ match.id }}">
+          <img src="{{ match.avatar_url or url_for('static', filename='images/default-avatar.svg') }}" class="match-avatar" alt="Avatar">
+          <div class="match-body">
+            <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:0.3rem;">
+              <h3 style="font-size:1.1rem; font-weight:700;">@{{ match.username }}</h3>
+              <span class="badge badge-accent">{{ match.compatibility_score }}% Match</span>
+            </div>
+            
+            <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:0.5rem;">
+              Age {{ match.age }}{% if match.gender %} • {{ match.gender|capitalize }}{% endif %}
+            </p>
+
+            {% if match.bio %}
+              <p style="font-size:0.85rem; color:var(--text-main); margin-bottom:0.75rem; line-height:1.4;">
+                "{{ match.bio | truncate(100, True, '...') }}"
+              </p>
+            {% endif %}
+
+            <div style="font-size:0.75rem; color:var(--text-dim); margin-bottom:0.25rem;">
+              Shared Interests ({{ match.shared_count }}):
+            </div>
+            <div class="interest-tags">
+              {% for tag in match.interests %}
+                <span class="interest-tag {% if tag in match.shared_interests %}shared{% endif %}">{{ tag }}</span>
+              {% endfor %}
+            </div>
+
+            <div style="margin-top:auto; display:flex; gap:0.5rem; padding-top:1rem; border-top:1px solid var(--border-color);">
+              <a href="{{ url_for('chat.chat_with_user', username=match.username) }}" class="btn btn-sm btn-primary" style="flex:1;">
+                💬 Chat
+              </a>
+              <button type="button" class="btn btn-sm btn-secondary" onclick="sendDatingConnectionRequest('{{ match.user_id }}', '{{ match.username }}', this)">
+                Connect
+              </button>
+              <button type="button" class="btn btn-sm btn-secondary" onclick="passDatingMatch('match-card-{{ match.id }}')" title="Pass">
+                ✕
+              </button>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="card" style="text-align:center; padding:3rem 1.5rem; color:var(--text-muted);">
+      <div style="font-size:3rem; margin-bottom:1rem;">💫</div>
+      <h3 style="margin-bottom:0.5rem; color:var(--text-main);">No Matches Found Yet</h3>
+      <p style="max-width:500px; margin:0 auto 1.5rem; font-size:0.9rem;">
+        We couldn't find active candidates matching your exact age range and gender preferences. Try broadening your age range or selecting more interest tags!
+      </p>
+      <a href="{{ url_for('dating.preferences') }}" class="btn btn-primary">Adjust Dating Preferences</a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/dating.js') }}"></script>
+{% endblock %}

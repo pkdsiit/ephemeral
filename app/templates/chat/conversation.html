@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block title %}Chat with @{{ other_user.username }}{% endblock %}
+
+{% block content %}
+<div class="chat-container">
+  <div class="chat-main" style="width:100%;">
+    <!-- Chat Header -->
+    <div class="chat-main-header">
+      <div class="chat-header-user">
+        <a href="{{ url_for('chat.index') }}" class="btn btn-sm btn-secondary" style="margin-right:0.4rem;">←</a>
+        <a href="{{ url_for('users.view_user_profile', username=other_user.username) }}">
+          <img src="{{ url_for('media.get_avatar', user_id=other_user.id) }}" class="chat-header-avatar" alt="Avatar">
+        </a>
+        <div class="chat-header-details">
+          <h3>
+            <a href="{{ url_for('users.view_user_profile', username=other_user.username) }}" style="color:var(--text-main);">
+              @{{ other_user.username }}
+            </a>
+          </h3>
+          <p>{{ other_user.display_name or 'Active Participant' }}</p>
+        </div>
+      </div>
+
+      <div class="chat-header-actions">
+        <button class="btn btn-sm btn-danger" onclick="chatApp.clearChat()" title="Clear conversation history">
+          🗑️ Clear
+        </button>
+      </div>
+    </div>
+
+    <!-- 7-Day & Ephemeral Notice Banner -->
+    <div class="chat-retention-banner">
+      <span>🔒 Ephemeral Chat • Messages expire after 7 days • Viewed photos delete automatically on next reply</span>
+    </div>
+
+    <!-- Messages Feed -->
+    <div class="chat-messages" id="chat-messages">
+      <!-- Dynamically populated by chat.js -->
+    </div>
+
+    <!-- Typing Indicator -->
+    <div id="typing-indicator" style="display:none; padding:0.3rem 1.25rem; font-size:0.75rem; color:var(--accent-cyan); font-style:italic;">
+      @{{ other_user.username }} is typing...
+    </div>
+
+    <!-- Chat Input Controls -->
+    <div class="chat-input-bar">
+      <!-- Hidden file inputs -->
+      <input type="file" id="chat-file-input" accept="image/png,image/jpeg,image/webp,image/gif" style="display:none;">
+      <input type="file" id="chat-camera-input" accept="image/*" capture="environment" style="display:none;">
+
+      <!-- Mobile Camera Button -->
+      <button type="button" class="btn btn-secondary btn-round" title="Take Photo (Mobile Camera)" onclick="document.getElementById('chat-camera-input').click()">
+        📷
+      </button>
+
+      <!-- Desktop Webcam Button -->
+      <button type="button" class="btn btn-secondary btn-round" id="chat-webcam-btn" title="Use Webcam (Desktop)">
+        📹
+      </button>
+
+      <!-- Gallery Upload Button -->
+      <button type="button" class="btn btn-secondary btn-round" title="Upload Image File" onclick="document.getElementById('chat-file-input').click()">
+        🖼️
+      </button>
+
+      <!-- Text Input -->
+      <input type="text" id="chat-input" class="chat-input" placeholder="Type an ephemeral message..." autocomplete="off">
+
+      <!-- Send Button -->
+      <button type="button" id="chat-send-btn" class="btn btn-primary btn-round" title="Send Message">
+        ➤
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Ephemeral Image Viewer Modal -->
+<div class="modal-backdrop" id="ephemeral-viewer-modal">
+  <div class="modal-dialog" style="max-width:600px; text-align:center;">
+    <div class="modal-header">
+      <div style="display:flex; align-items:center; gap:0.5rem;">
+        <span style="font-size:1.2rem;">🔒</span>
+        <h3 style="font-size:1.1rem; font-weight:700;">Ephemeral Image</h3>
+      </div>
+      <div style="display:flex; align-items:center; gap:1rem;">
+        <span id="ephemeral-countdown" class="badge badge-danger" style="font-size:0.9rem; padding:0.3rem 0.75rem;">20s</span>
+        <button class="modal-close" id="ephemeral-close-btn">&times;</button>
+      </div>
+    </div>
+    
+    <div style="background:#000; border-radius:var(--radius-md); overflow:hidden; min-height:280px; display:flex; align-items:center; justify-content:center;">
+      <img id="ephemeral-viewer-img" src="" alt="Ephemeral Image" style="max-width:100%; max-height:70vh; object-fit:contain;">
+    </div>
+    <div style="margin-top:0.75rem; font-size:0.8rem; color:var(--text-dim);">
+      ⚠️ Self-destruct timer active. Image file will be permanently erased once you reply.
+    </div>
+  </div>
+</div>
+
+<!-- Desktop Webcam Modal -->
+<div class="modal-backdrop" id="webcam-modal">
+  <div class="modal-dialog" style="max-width:540px; text-align:center;">
+    <div class="modal-header">
+      <h3 style="font-size:1.1rem; font-weight:700;">Webcam Photo Capture</h3>
+      <button class="modal-close" id="webcam-close-btn">&times;</button>
+    </div>
+
+    <div style="margin-bottom:1rem; border-radius:var(--radius-md); overflow:hidden;">
+      <video id="webcam-video" autoplay playsinline></video>
+      <canvas id="webcam-canvas" style="display:none;"></canvas>
+    </div>
+
+    <div style="display:flex; justify-content:center; gap:0.75rem;">
+      <button type="button" id="webcam-capture-btn" class="btn btn-primary">
+        📸 Capture Photo
+      </button>
+      <button type="button" id="webcam-retake-btn" class="btn btn-secondary" style="display:none;">
+        🔄 Retake
+      </button>
+      <button type="button" id="webcam-send-btn" class="btn btn-primary" style="display:none;">
+        ⚡ Send Ephemeral Photo
+      </button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/webcam.js') }}"></script>
+<script src="{{ url_for('static', filename='js/chat.js') }}"></script>
+<script>
+  const chatApp = new ChatApp({
+    conversationId: "{{ conversation.id }}",
+    currentUserId: "{{ current_user.id }}",
+    recipientUsername: "{{ other_user.username }}"
+  });
+</script>
+{% endblock %}

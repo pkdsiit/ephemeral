@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}Ephemeral — Temporary Communication by Design{% endblock %}
+
+{% block content %}
+<div class="hero">
+  <div class="badge badge-accent" style="margin-bottom:1rem; font-size:0.85rem; padding:0.4rem 0.9rem;">
+    ⚡ Privacy by Architecture • Zero Permanent Footprint
+  </div>
+  <h1>Messages that don't have to stay forever.</h1>
+  <p>
+    Experience truly temporary one-to-one messaging, self-destructing ephemeral images, public rooms, and private interest-based matchmaking — built from the ground up for modern privacy.
+  </p>
+
+  <div style="display:flex; justify-content:center; gap:1rem; flex-wrap:wrap;">
+    <a href="{{ url_for('auth.register') }}" class="btn btn-primary" style="padding:0.85rem 2rem; font-size:1.05rem;">
+      Start Chatting Free
+    </a>
+    <a href="{{ url_for('auth.login') }}" class="btn btn-secondary" style="padding:0.85rem 1.75rem; font-size:1.05rem;">
+      Sign In
+    </a>
+  </div>
+</div>
+
+<div class="feature-grid">
+  <div class="feature-box">
+    <div class="feature-icon">⏱️</div>
+    <h3 style="font-size:1.2rem; margin-bottom:0.5rem;">7-Day Auto Expiration</h3>
+    <p style="color:var(--text-muted); font-size:0.9rem;">
+      Every private message and public post expires and disappears after 7 days automatically. No unlimited permanent message archives.
+    </p>
+  </div>
+
+  <div class="feature-box">
+    <div class="feature-icon">🔒</div>
+    <h3 style="font-size:1.2rem; margin-bottom:0.5rem;">One-Time Ephemeral Images</h3>
+    <p style="color:var(--text-muted); font-size:0.9rem;">
+      Send one-time photos via camera, file upload, or desktop webcam. Once viewed and replied to, files are physically erased from the server.
+    </p>
+  </div>
+
+  <div class="feature-box">
+    <div class="feature-icon">✨</div>
+    <h3 style="font-size:1.2rem; margin-bottom:0.5rem;">Privacy-First Dating</h3>
+    <p style="color:var(--text-muted); font-size:0.9rem;">
+      Optional adult-only matchmaking based on shared hobbies and compatibility. No exposed emails, phone numbers, or public indexes.
+    </p>
+  </div>
+
+  <div class="feature-box">
+    <div class="feature-icon">🛡️</div>
+    <h3 style="font-size:1.2rem; margin-bottom:0.5rem;">Strict Access Control</h3>
+    <p style="color:var(--text-muted); font-size:0.9rem;">
+      UUID identifiers, encrypted passwords, rate limiting, and zero predictable media paths keep your private interactions completely safe.
+    </p>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<div>
+  <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; margin-bottom:1.5rem;">
+    <div>
+      <div class="badge badge-accent" style="margin-bottom:0.4rem;">Admin Control Center</div>
+      <h1 style="font-size:1.8rem; font-weight:700;">System Overview</h1>
+    </div>
+    <div style="display:flex; gap:0.5rem;">
+      <a href="{{ url_for('admin.users_list') }}" class="btn btn-secondary">Manage Users</a>
+      <a href="{{ url_for('admin.reports_list') }}" class="btn btn-secondary">Abuse Reports ({{ stats.pending_reports }})</a>
+      <a href="{{ url_for('admin.rooms_management') }}" class="btn btn-secondary">Public Rooms</a>
+    </div>
+  </div>
+
+  <!-- KPI Metric Cards -->
+  <div class="grid-3" style="margin-bottom:2rem;">
+    <div class="card">
+      <div style="font-size:0.85rem; color:var(--text-muted); margin-bottom:0.25rem;">Total Registered Users</div>
+      <div style="font-size:2rem; font-weight:800; color:var(--primary);">{{ stats.total_users }}</div>
+      <div style="font-size:0.8rem; color:var(--text-dim); margin-top:0.25rem;">{{ stats.active_users }} active • {{ stats.suspended_users }} suspended</div>
+    </div>
+
+    <div class="card">
+      <div style="font-size:0.85rem; color:var(--text-muted); margin-bottom:0.25rem;">Active Conversations</div>
+      <div style="font-size:2rem; font-weight:800; color:var(--accent-cyan);">{{ stats.total_conversations }}</div>
+      <div style="font-size:0.8rem; color:var(--text-dim); margin-top:0.25rem;">Ephemeral 7-day retention</div>
+    </div>
+
+    <div class="card">
+      <div style="font-size:0.85rem; color:var(--text-muted); margin-bottom:0.25rem;">Abuse Reports</div>
+      <div style="font-size:2rem; font-weight:800; color:{% if stats.pending_reports > 0 %}var(--danger){% else %}var(--success){% endif %};">
+        {{ stats.pending_reports }}
+      </div>
+      <div style="font-size:0.8rem; color:var(--text-dim); margin-top:0.25rem;">{{ stats.total_reports }} total filed</div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <!-- Recent Users -->
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Recent User Registrations</h3>
+        <a href="{{ url_for('admin.users_list') }}" style="font-size:0.85rem;">All Users →</a>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:0.5rem;">
+        {% for u in recent_users %}
+          <div style="display:flex; justify-content:space-between; align-items:center; padding:0.5rem 0.75rem; background:var(--bg-input); border-radius:var(--radius-md);">
+            <div>
+              <span style="font-weight:600;">@{{ u.username }}</span>
+              <span style="font-size:0.75rem; color:var(--text-muted); display:block;">{{ u.email }}</span>
+            </div>
+            <div>
+              {% if u.is_suspended %}
+                <span class="badge badge-danger">Suspended</span>
+              {% else %}
+                <span class="badge badge-success">Active</span>
+              {% endif %}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Recent Abuse Reports -->
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Recent Abuse Reports</h3>
+        <a href="{{ url_for('admin.reports_list') }}" style="font-size:0.85rem;">All Reports →</a>
+      </div>
+      {% if recent_reports %}
+        <div style="display:flex; flex-direction:column; gap:0.5rem;">
+          {% for r in recent_reports %}
+            <div style="padding:0.75rem; background:var(--bg-input); border-radius:var(--radius-md);">
+              <div style="display:flex; justify-content:space-between; margin-bottom:0.25rem;">
+                <span style="font-weight:600; font-size:0.9rem;">Target: @{{ r.reported_user.username if r.reported_user else 'N/A' }}</span>
+                <span class="badge {% if r.status == 'PENDING' %}badge-warning{% else %}badge-success{% endif %}">{{ r.status }}</span>
+              </div>
+              <p style="font-size:0.8rem; color:var(--text-muted);">{{ r.reason }}</p>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p style="color:var(--text-dim); text-align:center; padding:1.5rem 0;">No abuse reports logged.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

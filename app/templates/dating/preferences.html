@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block title %}Dating Preferences{% endblock %}
+
+{% block content %}
+<div class="container-narrow" style="max-width:640px;">
+  <div class="card">
+    <div style="margin-bottom:1.5rem;">
+      <h1 style="font-size:1.6rem; font-weight:700; margin-bottom:0.25rem;">Dating & Matchmaking Preferences</h1>
+      <p style="color:var(--text-muted); font-size:0.85rem;">Customize your criteria for mutual compatibility matching</p>
+    </div>
+
+    <form method="POST" action="{{ url_for('dating.preferences') }}">
+      {{ form.hidden_tag() }}
+
+      <div class="form-check" style="background:var(--bg-input); padding:1rem; border-radius:var(--radius-md); margin-bottom:1.5rem;">
+        {{ form.enabled(id="enabled-toggle") }}
+        <label for="enabled-toggle" style="font-weight:600; cursor:pointer; color:var(--text-main);">
+          Enable Matchmaking & Suggestions
+        </label>
+      </div>
+
+      <div class="grid-2" style="gap:1rem; margin-bottom:1rem;">
+        <div class="form-group">
+          {{ form.age.label(class="form-label") }}
+          {{ form.age(class="form-control" + (" is-invalid" if form.age.errors else ""), placeholder="e.g. 25") }}
+          <div class="form-text">Must be 18 or older.</div>
+          {% for error in form.age.errors %}
+            <div class="invalid-feedback">{{ error }}</div>
+          {% endfor %}
+        </div>
+
+        <div class="form-group">
+          {{ form.gender.label(class="form-label") }}
+          {{ form.gender(class="form-control") }}
+        </div>
+      </div>
+
+      <div class="grid-2" style="gap:1rem; margin-bottom:1rem;">
+        <div class="form-group">
+          {{ form.interested_in.label(class="form-label") }}
+          {{ form.interested_in(class="form-control") }}
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Preferred Age Range</label>
+          <div style="display:flex; gap:0.5rem; align-items:center;">
+            {{ form.min_age_pref(class="form-control", placeholder="Min (18)", style="text-align:center;") }}
+            <span>to</span>
+            {{ form.max_age_pref(class="form-control", placeholder="Max (99)", style="text-align:center;") }}
+          </div>
+          {% for error in form.max_age_pref.errors %}
+            <div class="invalid-feedback">{{ error }}</div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="form-check">
+        {{ form.show_gender(id="show-gender") }}
+        <label for="show-gender" style="font-size:0.85rem; color:var(--text-muted); cursor:pointer;">
+          Display my gender badge on my dating card
+        </label>
+      </div>
+
+      <div class="form-group">
+        {{ form.bio.label(class="form-label") }}
+        {{ form.bio(class="form-control", rows=3, placeholder="What are you looking for? Share your vibe...") }}
+      </div>
+
+      <!-- Structured Interests Selection -->
+      <div class="form-group">
+        <label class="form-label">Your Hobbies & Interests (Used to calculate compatibility score)</label>
+        <div style="display:flex; flex-wrap:wrap; gap:0.5rem; max-height:220px; overflow-y:auto; padding:0.5rem; background:var(--bg-input); border-radius:var(--radius-md);">
+          {% for subfield in form.interests %}
+            <label style="display:inline-flex; align-items:center; gap:0.4rem; padding:0.35rem 0.75rem; border-radius:var(--radius-full); background:var(--bg-card); border:1px solid var(--border-color); font-size:0.85rem; cursor:pointer;">
+              {{ subfield() }}
+              <span>{{ subfield.label.text }}</span>
+            </label>
+          {% endfor %}
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-block" style="padding:0.75rem; margin-top:1rem;">
+        Save Dating Preferences
+      </button>
+    </form>
+  </div>
+</div>
+{% endblock %}
