@@ -123,12 +123,19 @@ class PublicChatApp {
         body: JSON.stringify({ content: text })
       });
 
-      if (!resp.ok) {
+      if (resp.ok) {
+        const result = await resp.json();
+        if (result && result.data) {
+          this.appendMessage(result.data);
+          this.scrollToBottom();
+        }
+      } else {
         const data = await resp.json();
         alert(data.error || "Failed to send message.");
       }
     } catch (err) {
       console.error("Error sending public message:", err);
+      alert("Failed to send message. Please check connection.");
     }
   }
 
