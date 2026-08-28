@@ -142,7 +142,22 @@ def register_error_handlers(app: Flask):
 
 
 def register_cli_commands(app: Flask):
+    @app.cli.command("seed-interests")
+    def seed_interests_cmd():
+        """Seed default structured interest tags for dating matching."""
+        from app.dating.services import seed_interests
+        seed_interests()
+        print("Default dating interests seeded successfully.")
+
+    @app.cli.command("seed-rooms")
+    def seed_rooms_cmd():
+        """Seed default public chat rooms."""
+        from app.public_chat.routes import seed_public_rooms
+        seed_public_rooms()
+        print("Default public chat rooms seeded successfully.")
+
     @app.cli.command("seed-admin")
+    @app.cli.command("create-admin")
     def seed_admin():
         """Create or update admin account from environment settings."""
         admin_email = app.config.get('ADMIN_EMAIL', 'admin@ephemeral.local')
@@ -162,7 +177,7 @@ def register_cli_commands(app: Flask):
             user.set_password(admin_password)
             ext.db.session.add(user)
             ext.db.session.commit()
-            print(f"Admin account @{admin_username} created successfully.")
+            print(f"Admin account @{admin_username} created successfully (Password: {admin_password}).")
         else:
             user.is_admin = True
             ext.db.session.commit()
@@ -177,6 +192,7 @@ def register_cli_commands(app: Flask):
         seed_public_rooms()
         print("Default interests and public chat rooms seeded.")
 
+    @app.cli.command("run-cleanup")
     @app.cli.command("cleanup-expired")
     def cleanup_expired():
         """Run idempotent expired messages and ephemeral images cleanup."""
