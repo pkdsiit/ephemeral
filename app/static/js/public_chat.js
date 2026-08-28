@@ -111,33 +111,51 @@ class PublicChatApp {
     if (!this.messagesContainer) return;
     if (document.getElementById(`pmsg-${msg.id}`)) return;
 
-    const isAuthor = msg.user_id === this.currentUserId || msg.is_author;
-    const bubble = document.createElement('div');
-    bubble.id = `pmsg-${msg.id}`;
-    bubble.className = `message-bubble ${isAuthor ? 'message-sent' : 'message-received'}`;
+    const senderId = (msg.sender && msg.sender.id) || msg.sender_id || msg.user_id;
+    const isAuthor = (senderId && senderId === this.currentUserId) || msg.is_author === true;
+
+    // Resolve public sender identity
+    let displayName = 'Anonymous';
+    let gender = 'Member';
+
+    if (msg.sender) {
+      displayName = msg.sender.display_name || (msg.sender.show_username && msg.sender.username ? `@${msg.sender.username}` : 'Anonymous');
+      gender = msg.sender.gender || 'Member';
+    } else if (msg.username) {
+      displayName = `@${msg.username}`;
+    }
+
+    const wrapper = document.createElement('div');
+    wrapper.id = `pmsg-${msg.id}`;
+    wrapper.className = `public-message-wrapper ${isAuthor ? 'sent' : 'received'}`;
 
     let deleteBtnHtml = '';
     if ((isAuthor || this.isAdmin) && !msg.is_deleted) {
       deleteBtnHtml = `
         <div class="message-actions">
-          <button class="btn btn-sm btn-danger" style="padding:2px 6px; font-size:0.7rem;" onclick="publicChatApp.deleteMessage('${msg.id}')">Delete</button>
+          <button type="button" class="btn btn-sm btn-danger" style="padding:2px 6px; font-size:0.7rem;" onclick="publicChatApp.deleteMessage('${msg.id}')">Delete</button>
         </div>
       `;
     }
 
     const timeStr = new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    const authorHeader = !isAuthor ? `<div style="font-size:0.75rem; font-weight:bold; color:var(--accent-cyan); margin-bottom:2px;">@${this.escapeHtml(msg.username)}</div>` : '';
 
-    bubble.innerHTML = `
+    wrapper.innerHTML = `
       ${deleteBtnHtml}
-      ${authorHeader}
-      <div class="message-body">${this.escapeHtml(msg.content)}</div>
-      <div class="message-meta">
-        <span>${timeStr}</span>
+      <div class="public-sender-header">
+        <span>${this.escapeHtml(displayName)}</span>
+        <span>·</span>
+        <span class="public-sender-gender">${this.escapeHtml(gender)}</span>
+      </div>
+      <div class="public-bubble ${isAuthor ? 'sent' : 'received'}">
+        <div class="message-body">${this.escapeHtml(msg.content)}</div>
+        <div class="message-meta">
+          <span>${timeStr}</span>
+        </div>
       </div>
     `;
 
-    this.messagesContainer.appendChild(bubble);
+    this.messagesContainer.appendChild(wrapper);
   }
 
   async sendMessage() {

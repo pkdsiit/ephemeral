@@ -6,6 +6,42 @@
 <div class="container-narrow" style="max-width:600px;">
   <h1 style="font-size:1.8rem; font-weight:700; margin-bottom:1.5rem;">Account Settings</h1>
 
+  <!-- Public Chat Privacy Card -->
+  <div class="card" style="margin-bottom:1.5rem;">
+    <div class="card-header" style="border:none; padding-bottom:0; margin-bottom:0.75rem;">
+      <h2 style="font-size:1.25rem; font-weight:600;">Public Chat Privacy</h2>
+      <span class="badge badge-accent">Public Rooms</span>
+    </div>
+    <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:1.25rem;">
+      Control whether your username is displayed next to your messages across all public chat rooms.
+    </p>
+
+    <form method="POST" action="{{ url_for('users.update_privacy_settings') }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+      <div style="background:var(--bg-input); padding:1rem 1.25rem; border-radius:var(--radius-md); border:1px solid var(--border-color); margin-bottom:1.25rem; display:flex; justify-content:space-between; align-items:center; gap:1rem;">
+        <div style="flex:1;">
+          <label for="show_username_in_public_chat" style="font-weight:700; color:var(--text-main); display:block; margin-bottom:0.25rem; cursor:pointer;">
+            Show my username in public chat rooms
+          </label>
+          <p style="color:var(--text-muted); font-size:0.82rem; margin:0; line-height:1.5;">
+            When enabled, your username will be displayed next to your messages in public rooms. Your gender will remain visible.
+          </p>
+        </div>
+        <div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="show_username_in_public_chat" name="show_username_in_public_chat" value="y" {% if current_user.show_username_in_public_chat %}checked{% endif %}>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary">
+        Save Privacy Preference
+      </button>
+    </form>
+  </div>
+
   <!-- Update Username Card -->
   <div class="card" style="margin-bottom:1.5rem;">
     <h2 style="font-size:1.25rem; font-weight:600; margin-bottom:0.4rem;">Change Username</h2>

@@ -19,6 +19,7 @@ def app():
     storage_service.init_app(app)
 
     with app.app_context():
+        db.drop_all()
         db.create_all()
         seed_interests()
         seed_public_rooms()

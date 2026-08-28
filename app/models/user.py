@@ -21,6 +21,8 @@ class User(UserMixin, db.Model):
     display_name = db.Column(db.String(64), nullable=True)
     avatar_path = db.Column(db.String(255), nullable=True)
     bio = db.Column(db.Text, nullable=True)
+    gender = db.Column(db.String(32), nullable=True)
+    show_username_in_public_chat = db.Column(db.Boolean, default=True, nullable=False)
     
     is_active_account = db.Column(db.Boolean, default=True, nullable=False)
     is_admin = db.Column(db.Boolean, default=False, nullable=False)
@@ -167,6 +169,41 @@ class User(UserMixin, db.Model):
             'bio': self.bio or '',
             'created_at': self.created_at.isoformat() if self.created_at else None,
             'dating_enabled': bool(self.dating_profile and self.dating_profile.enabled)
+        }
+
+    def get_gender_display(self) -> str:
+        """Return formatted gender (e.g. Male, Female, Other, Member)."""
+        if self.gender:
+            return self.gender.capitalize()
+        if self.dating_profile and self.dating_profile.gender:
+            return self.dating_profile.gender.capitalize()
+        return "Member"
+
+    def get_public_chat_identity(self) -> dict:
+        """
+        Public chat identity formatting.
+        Respects show_username_in_public_chat preference without leaking username.
+        Never exposes age.
+        """
+        show_username = getattr(self, 'show_username_in_public_chat', True)
+        if show_username is None:
+            show_username = True
+            
+        gender_display = self.get_gender_display()
+        
+        if show_username:
+            display_name = f"@{self.username}"
+            username = self.username
+        else:
+            display_name = "Anonymous"
+            username = None
+
+        return {
+            'id': self.id,
+            'display_name': display_name,
+            'username': username,
+            'gender': gender_display,
+            'show_username': show_username
         }
 
     def __repr__(self) -> str:

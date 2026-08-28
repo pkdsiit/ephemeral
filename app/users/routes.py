@@ -129,6 +129,36 @@ def update_password():
     return render_template('users/settings.html', username_form=username_form, password_form=form)
 
 
+@users_bp.route('/settings/privacy', methods=['POST'])
+@login_required
+def update_privacy_settings():
+    show_username = bool(request.form.get('show_username_in_public_chat'))
+    current_user.show_username_in_public_chat = show_username
+    current_user.updated_at = datetime.now(timezone.utc)
+    db.session.commit()
+    flash(f"Public chat privacy updated: Username is now {'visible' if show_username else 'hidden (Anonymous)'} in public rooms.", "success")
+    return redirect(url_for('users.settings'))
+
+
+@users_bp.route('/api/settings/privacy', methods=['POST'])
+@login_required
+def api_update_privacy():
+    data = request.get_json(silent=True) or request.form or {}
+    show_username = data.get('show_username_in_public_chat')
+    if isinstance(show_username, str):
+        show_username = show_username.lower() in ('true', '1', 'on', 'yes', 'y')
+    else:
+        show_username = bool(show_username)
+
+    current_user.show_username_in_public_chat = show_username
+    current_user.updated_at = datetime.now(timezone.utc)
+    db.session.commit()
+    return jsonify({
+        'message': 'Privacy setting updated successfully',
+        'show_username_in_public_chat': current_user.show_username_in_public_chat
+    }), 200
+
+
 @users_bp.route('/settings/delete-avatar', methods=['POST'])
 @login_required
 def delete_avatar():

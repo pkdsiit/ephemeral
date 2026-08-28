@@ -62,15 +62,22 @@ class PublicMessage(db.Model):
 
     def to_dict(self, current_user_id: str = None) -> dict:
         is_author = (self.user_id == current_user_id) if current_user_id else False
+        sender_info = self.author.get_public_chat_identity() if self.author else {
+            'id': self.user_id,
+            'display_name': 'Anonymous',
+            'username': None,
+            'gender': 'Member',
+            'show_username': False
+        }
         return {
             'id': self.id,
             'room_id': self.room_id,
+            'sender_id': self.user_id,
             'user_id': self.user_id,
-            'username': self.author.username if self.author else 'Unknown',
-            'display_name': (self.author.display_name or self.author.username) if self.author else 'Unknown',
-            'avatar_url': f"/media/avatar/{self.user_id}" if (self.author and self.author.avatar_path) else None,
+            'sender': sender_info,
             'content': '[ Message deleted ]' if (self.is_deleted or self.is_expired) else self.content,
             'is_author': is_author,
             'created_at': self.created_at.isoformat(),
+            'expires_at': self.expires_at.isoformat() if self.expires_at else None,
             'is_deleted': self.is_deleted
         }
