@@ -95,3 +95,9 @@ def trigger_cleanup():
         'message': 'Ephemeral cleanup executed successfully',
         'stats': stats
     }), 200
+
+
+@main_bp.route('/about')
+@main_bp.route('/contact')
+def about():
+    return render_template('main/about.html')

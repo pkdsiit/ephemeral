@@ -33,6 +33,7 @@
         <li><a href="{{ url_for('dating.index') }}" class="{% if request.endpoint and request.endpoint.startswith('dating.') %}active{% endif %}">Dating</a></li>
         <li><a href="{{ url_for('users.search_page') }}" class="{% if request.endpoint == 'users.search_page' %}active{% endif %}">Discover</a></li>
         <li><a href="{{ url_for('users.friends_page') }}" class="{% if request.endpoint == 'users.friends_page' %}active{% endif %}">Connections</a></li>
+        <li><a href="{{ url_for('main.about') }}" class="{% if request.endpoint == 'main.about' %}active{% endif %}">About</a></li>
         {% if current_user.is_admin %}
         <li><a href="{{ url_for('admin.dashboard') }}" class="{% if request.endpoint and request.endpoint.startswith('admin.') %}active{% endif %}"><span class="badge badge-accent">Admin</span></a></li>
         {% endif %}
@@ -49,6 +50,7 @@
     </div>
     {% else %}
     <div class="nav-user">
+      <a href="{{ url_for('main.about') }}" class="btn btn-sm btn-secondary" style="border:none; background:transparent;">About</a>
       <a href="{{ url_for('auth.login') }}" class="btn btn-sm btn-secondary">Sign In</a>
       <a href="{{ url_for('auth.register') }}" class="btn btn-sm btn-primary">Join Free</a>
     </div>
@@ -75,6 +77,9 @@
     </a>
     <a href="{{ url_for('users.search_page') }}" class="top-nav-tab {% if request.endpoint == 'users.search_page' %}active{% endif %}">
       <span>🔍 Discover</span>
+    </a>
+    <a href="{{ url_for('main.about') }}" class="top-nav-tab {% if request.endpoint == 'main.about' %}active{% endif %}">
+      <span>ℹ️ About</span>
     </a>
     <a href="{{ url_for('users.profile') }}" class="top-nav-tab {% if request.endpoint and request.endpoint.startswith('users.profile') %}active{% endif %}">
       <span>👤 Profile</span>
