@@ -10,6 +10,15 @@ def normalize_db_url(url: str | None) -> str:
     """Normalize database URL for SQLAlchemy compatibility (e.g., postgres:// -> postgresql://)."""
     if not url:
         return "postgresql://localhost/ephemeral_chat_db"
+    
+    url = str(url).strip()
+    # Strip surrounding single or double quotes if copied with quotes
+    if (url.startswith('"') and url.endswith('"')) or (url.startswith("'") and url.endswith("'")):
+        url = url[1:-1].strip()
+
+    if not url:
+        return "postgresql://localhost/ephemeral_chat_db"
+
     if url.startswith("postgres://"):
         url = url.replace("postgres://", "postgresql://", 1)
     if "sqlite" in url.lower():
