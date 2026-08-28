@@ -3,6 +3,7 @@ from wtforms import (
     BooleanField, IntegerField, SelectField,
     SelectMultipleField, TextAreaField, SubmitField
 )
+from wtforms.widgets import ListWidget, CheckboxInput
 from wtforms.validators import DataRequired, Optional, NumberRange, ValidationError
 
 
@@ -44,7 +45,13 @@ class DatingPreferencesForm(FlaskForm):
         Optional()
     ])
 
-    interests = SelectMultipleField('Interests & Hobbies', coerce=int, choices=[])
+    interests = SelectMultipleField(
+        'Interests & Hobbies',
+        coerce=int,
+        choices=[],
+        widget=ListWidget(prefix_label=False),
+        option_widget=CheckboxInput()
+    )
 
     submit = SubmitField('Save Dating Preferences')
 

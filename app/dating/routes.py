@@ -1,10 +1,11 @@
-from datetime import datetime, timezone
+from datetime import datetime
 from flask import Blueprint, render_template, redirect, url_for, flash, request, jsonify
 from flask_login import login_required, current_user
 from app.extensions import db
 from app.models.dating import DatingProfile, Interest
 from app.dating.forms import DatingPreferencesForm
 from app.dating.services import get_dating_matches, seed_interests
+from app.utils import utcnow
 
 dating_bp = Blueprint('dating', __name__)
 
@@ -44,7 +45,7 @@ def preferences():
         profile.max_age_pref = form.max_age_pref.data or 99
         profile.show_gender = form.show_gender.data
         profile.bio = form.bio.data.strip() if form.bio.data else None
-        profile.updated_at = datetime.now(timezone.utc)
+        profile.updated_at = utcnow()
 
         # Update selected interests
         selected_ids = form.interests.data or []
@@ -129,7 +130,7 @@ def api_update_profile():
         names = data['interests']
         profile.interests = Interest.query.filter(Interest.name.in_(names)).all()
 
-    profile.updated_at = datetime.now(timezone.utc)
+    profile.updated_at = utcnow()
     db.session.commit()
 
     return jsonify({

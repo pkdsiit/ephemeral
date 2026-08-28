@@ -1,10 +1,31 @@
 // Dating Module Controller for Ephemeral Chat
 
+function updateInterestCounter() {
+  const countSpan = document.getElementById('selected-interests-count');
+  const summaryCount = document.getElementById('summary-hobbies-count');
+  const checkedBoxes = document.querySelectorAll('.interest-checkbox:checked');
+  if (countSpan) {
+    countSpan.textContent = `${checkedBoxes.length} Selected`;
+  }
+  if (summaryCount) {
+    summaryCount.textContent = `${checkedBoxes.length} selected`;
+  }
+}
+
+function onInterestToggle(checkbox, chipId) {
+  const chip = document.getElementById(chipId) || checkbox.closest('.interest-chip');
+  if (chip) {
+    chip.classList.toggle('selected', checkbox.checked);
+  }
+  updateInterestCounter();
+}
+
 function toggleInterestChip(chipElement, checkboxId) {
   const checkbox = document.getElementById(checkboxId);
   if (checkbox) {
     checkbox.checked = !checkbox.checked;
-    chipElement.classList.toggle('active', checkbox.checked);
+    chipElement.classList.toggle('selected', checkbox.checked);
+    updateInterestCounter();
   }
 }
 
