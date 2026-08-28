@@ -2,12 +2,15 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="csrf-token" content="{{ csrf_token() }}">
+  <meta name="theme-color" content="#0b0f19">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="robots" content="noindex, nofollow">
   <title>{% block title %}{{ app_name }}{% endblock %} — Ephemeral Communication</title>
   
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=4.0">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
 
   {% block extra_head %}{% endblock %}
@@ -24,22 +27,22 @@
     {% if current_user.is_authenticated %}
     <nav>
       <ul class="nav-links">
-        <li><a href="{{ url_for('main.dashboard') }}">Dashboard</a></li>
-        <li><a href="{{ url_for('chat.index') }}">Chats</a></li>
-        <li><a href="{{ url_for('public_chat.index') }}">Public Square</a></li>
-        <li><a href="{{ url_for('dating.index') }}">Dating</a></li>
-        <li><a href="{{ url_for('users.search_page') }}">Discover</a></li>
-        <li><a href="{{ url_for('users.friends_page') }}">Connections</a></li>
+        <li><a href="{{ url_for('main.dashboard') }}" class="{% if request.endpoint == 'main.dashboard' %}active{% endif %}">Dashboard</a></li>
+        <li><a href="{{ url_for('chat.index') }}" class="{% if request.endpoint and request.endpoint.startswith('chat.') %}active{% endif %}">Chats</a></li>
+        <li><a href="{{ url_for('public_chat.index') }}" class="{% if request.endpoint and request.endpoint.startswith('public_chat.') %}active{% endif %}">Public Square</a></li>
+        <li><a href="{{ url_for('dating.index') }}" class="{% if request.endpoint and request.endpoint.startswith('dating.') %}active{% endif %}">Dating</a></li>
+        <li><a href="{{ url_for('users.search_page') }}" class="{% if request.endpoint == 'users.search_page' %}active{% endif %}">Discover</a></li>
+        <li><a href="{{ url_for('users.friends_page') }}" class="{% if request.endpoint == 'users.friends_page' %}active{% endif %}">Connections</a></li>
         {% if current_user.is_admin %}
-        <li><a href="{{ url_for('admin.dashboard') }}"><span class="badge badge-accent">Admin</span></a></li>
+        <li><a href="{{ url_for('admin.dashboard') }}" class="{% if request.endpoint and request.endpoint.startswith('admin.') %}active{% endif %}"><span class="badge badge-accent">Admin</span></a></li>
         {% endif %}
       </ul>
     </nav>
 
     <div class="nav-user">
-      <a href="{{ url_for('users.profile') }}" style="display:flex; align-items:center; gap:0.5rem;">
+      <a href="{{ url_for('users.profile') }}" style="display:flex; align-items:center; gap:0.5rem;" title="Your Profile">
         <img src="{{ url_for('media.get_avatar', user_id=current_user.id) }}" alt="Avatar" class="user-avatar-tiny">
-        <span style="font-weight:600; font-size:0.9rem; color:var(--text-main);">@{{ current_user.username }}</span>
+        <span class="nav-username" style="font-weight:600; font-size:0.9rem; color:var(--text-main);">@{{ current_user.username }}</span>
       </a>
       <a href="{{ url_for('users.settings') }}" title="Settings" class="btn btn-sm btn-secondary" style="padding:0.4rem 0.6rem;">⚙</a>
       <a href="{{ url_for('auth.logout') }}" class="btn btn-sm btn-danger" style="padding:0.4rem 0.75rem;">Logout</a>
@@ -52,28 +55,32 @@
     {% endif %}
   </header>
 
-  <!-- Mobile Bottom Navigation Bar -->
+  <!-- Mobile Bottom Navigation Bar with Native App-Style Tabs -->
   {% if current_user.is_authenticated %}
   <nav class="mobile-nav">
-    <a href="{{ url_for('main.dashboard') }}">
-      <span>🏠</span>
-      <span>Home</span>
+    <a href="{{ url_for('main.dashboard') }}" class="mobile-nav-item {% if request.endpoint == 'main.dashboard' %}active{% endif %}">
+      <span class="mobile-nav-icon">🏠</span>
+      <span class="mobile-nav-label">Home</span>
     </a>
-    <a href="{{ url_for('chat.index') }}">
-      <span>💬</span>
-      <span>Chats</span>
+    <a href="{{ url_for('chat.index') }}" class="mobile-nav-item {% if request.endpoint and request.endpoint.startswith('chat.') %}active{% endif %}">
+      <span class="mobile-nav-icon">💬</span>
+      <span class="mobile-nav-label">Chats</span>
     </a>
-    <a href="{{ url_for('public_chat.index') }}">
-      <span>🌐</span>
-      <span>Public</span>
+    <a href="{{ url_for('public_chat.index') }}" class="mobile-nav-item {% if request.endpoint and request.endpoint.startswith('public_chat.') %}active{% endif %}">
+      <span class="mobile-nav-icon">🌐</span>
+      <span class="mobile-nav-label">Square</span>
     </a>
-    <a href="{{ url_for('dating.index') }}">
-      <span>✨</span>
-      <span>Dating</span>
+    <a href="{{ url_for('dating.index') }}" class="mobile-nav-item {% if request.endpoint and request.endpoint.startswith('dating.') %}active{% endif %}">
+      <span class="mobile-nav-icon">💖</span>
+      <span class="mobile-nav-label">Dating</span>
     </a>
-    <a href="{{ url_for('users.profile') }}">
-      <span>👤</span>
-      <span>Profile</span>
+    <a href="{{ url_for('users.friends_page') }}" class="mobile-nav-item {% if request.endpoint == 'users.friends_page' %}active{% endif %}">
+      <span class="mobile-nav-icon">👥</span>
+      <span class="mobile-nav-label">Friends</span>
+    </a>
+    <a href="{{ url_for('users.profile') }}" class="mobile-nav-item {% if request.endpoint and request.endpoint.startswith('users.profile') %}active{% endif %}">
+      <span class="mobile-nav-icon">👤</span>
+      <span class="mobile-nav-label">Profile</span>
     </a>
   </nav>
   {% endif %}

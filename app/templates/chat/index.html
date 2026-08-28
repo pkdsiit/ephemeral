@@ -3,22 +3,22 @@
 {% block title %}Your Conversations{% endblock %}
 
 {% block content %}
-<div style="max-width:800px; margin:0 auto;">
-  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+<div style="max-width:760px; margin:0 auto;">
+  <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.75rem; margin-bottom:1.25rem;">
     <div>
-      <h1 style="font-size:1.6rem; font-weight:700;">Private Conversations</h1>
-      <p style="color:var(--text-muted); font-size:0.85rem;">All messages automatically self-destruct after 7 days</p>
+      <h1 style="font-size:1.6rem; font-weight:800; letter-spacing:-0.02em;">Messages</h1>
+      <p style="color:var(--text-muted); font-size:0.85rem;">🔒 End-to-end ephemeral • 7-day auto self-destruct</p>
     </div>
-    <a href="{{ url_for('users.search_page') }}" class="btn btn-primary">
-      <span>+ New Conversation</span>
+    <a href="{{ url_for('users.search_page') }}" class="btn btn-primary" style="box-shadow:var(--shadow-glow);">
+      <span>✏️ New Chat</span>
     </a>
   </div>
 
-  <div class="card" style="padding:0.5rem;">
+  <div class="card" style="padding:0.4rem; overflow:hidden;">
     {% if conversations %}
       <div style="display:flex; flex-direction:column;">
         {% for conv in conversations %}
-          <a href="{{ url_for('chat.conversation_view', conversation_id=conv.id) }}" class="chat-item" style="border-radius:var(--radius-sm);">
+          <a href="{{ url_for('chat.conversation_view', conversation_id=conv.id) }}" class="chat-item" style="border-radius:var(--radius-md); padding:0.9rem;">
             <img src="{{ conv.other_user.avatar_url or url_for('static', filename='images/default-avatar.svg') }}" class="chat-item-avatar" alt="Avatar">
             <div class="chat-item-info">
               <div class="chat-item-top">
@@ -29,24 +29,31 @@
               </div>
               <div class="chat-item-preview">
                 {% if conv.last_message %}
-                  {{ conv.last_message.content }}
+                  {% if conv.last_message.message_type == 'IMAGE' %}
+                    📷 <em>Ephemeral Photo</em>
+                  {% else %}
+                    {{ conv.last_message.content }}
+                  {% endif %}
                 {% else %}
-                  <span style="font-style:italic;">No messages yet</span>
+                  <span style="color:var(--text-dim); font-style:italic;">Tap to say hi 👋</span>
                 {% endif %}
               </div>
             </div>
             <div style="display:flex; align-items:center; gap:0.5rem;">
-              <span class="chat-item-time">{{ conv.last_message_at | string | truncate(16, True, '') }}</span>
+              <span class="chat-item-time" data-timestamp="{{ conv.last_message_at }}">{{ conv.last_message_at | string | truncate(16, True, '') }}</span>
+              <span style="color:var(--text-dim); font-size:0.9rem;">›</span>
             </div>
           </a>
         {% endfor %}
       </div>
     {% else %}
-      <div style="text-align:center; padding:3rem 1.5rem; color:var(--text-muted);">
-        <div style="font-size:3rem; margin-bottom:1rem;">💬</div>
-        <h3 style="margin-bottom:0.5rem; color:var(--text-main);">No Conversations Yet</h3>
-        <p style="margin-bottom:1.5rem; font-size:0.9rem;">Find someone by their username to start private, ephemeral messaging.</p>
-        <a href="{{ url_for('users.search_page') }}" class="btn btn-primary">Search Users by @username</a>
+      <div style="text-align:center; padding:3.5rem 1.5rem; color:var(--text-muted);">
+        <div style="font-size:3.2rem; margin-bottom:0.75rem;">💬</div>
+        <h3 style="margin-bottom:0.4rem; color:var(--text-main); font-weight:700;">No Chats Yet</h3>
+        <p style="margin-bottom:1.5rem; font-size:0.9rem; max-width:380px; margin-left:auto; margin-right:auto;">
+          Search for users by their @username to start private 1-to-1 ephemeral messaging.
+        </p>
+        <a href="{{ url_for('users.search_page') }}" class="btn btn-primary">Find People to Chat</a>
       </div>
     {% endif %}
   </div>
