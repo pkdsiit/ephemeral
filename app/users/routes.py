@@ -279,6 +279,20 @@ def api_update_username():
     }), 200
 
 
+@users_bp.route('/api/friends', methods=['GET'])
+@login_required
+def api_get_friends():
+    friends = current_user.get_friends()
+    pending_sent = current_user.get_pending_friend_requests_sent()
+    pending_received = current_user.get_pending_friend_requests_received()
+
+    return jsonify({
+        'friends': [f.get_public_profile() for f in friends],
+        'pending_sent': [r.to_dict(current_user.id) for r in pending_sent],
+        'pending_received': [r.to_dict(current_user.id) for r in pending_received]
+    }), 200
+
+
 @users_bp.route('/api/friends/request', methods=['POST'])
 @login_required
 def api_send_friend_request():

@@ -140,6 +140,23 @@ class User(UserMixin, db.Model):
             return False
         return True
 
+    def get_friends(self):
+        """Return list of User objects who have an accepted friendship."""
+        from app.models.friendship import Friendship
+        accepted_sent = Friendship.query.filter_by(requester_id=self.id, status='ACCEPTED').all()
+        accepted_recv = Friendship.query.filter_by(addressee_id=self.id, status='ACCEPTED').all()
+        return [f.addressee for f in accepted_sent if f.addressee] + [f.requester for f in accepted_recv if f.requester]
+
+    def get_pending_friend_requests_sent(self):
+        """Return list of Friendship objects initiated by user with status=PENDING."""
+        from app.models.friendship import Friendship
+        return Friendship.query.filter_by(requester_id=self.id, status='PENDING').all()
+
+    def get_pending_friend_requests_received(self):
+        """Return list of Friendship objects received by user with status=PENDING."""
+        from app.models.friendship import Friendship
+        return Friendship.query.filter_by(addressee_id=self.id, status='PENDING').all()
+
     def get_public_profile(self) -> dict:
         """Safe public representation without sensitive email or private data."""
         return {
