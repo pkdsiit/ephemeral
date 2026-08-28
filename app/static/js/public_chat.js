@@ -13,6 +13,7 @@ class PublicChatApp {
     this.socket = null;
     this.initSocket();
     this.initEvents();
+    this.initMobileKeyboard();
     this.loadMessages();
   }
 
@@ -57,6 +58,31 @@ class PublicChatApp {
           e.preventDefault();
           this.sendMessage();
         }
+      });
+    }
+  }
+
+  initMobileKeyboard() {
+    if (window.visualViewport) {
+      const handleResize = () => {
+        const viewportHeight = window.visualViewport.height;
+        const chatContainer = document.querySelector('.chat-container');
+        if (chatContainer && window.innerWidth <= 768) {
+          chatContainer.style.height = `${viewportHeight - 65}px`;
+          this.scrollToBottom();
+        }
+      };
+
+      window.visualViewport.addEventListener('resize', handleResize);
+      window.visualViewport.addEventListener('scroll', handleResize);
+    }
+
+    if (this.messageInput) {
+      this.messageInput.addEventListener('focus', () => {
+        setTimeout(() => {
+          this.scrollToBottom();
+          window.scrollTo(0, 0);
+        }, 250);
       });
     }
   }

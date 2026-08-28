@@ -55,32 +55,29 @@
     {% endif %}
   </header>
 
-  <!-- Mobile Bottom Navigation Bar with Native App-Style Tabs -->
-  {% if current_user.is_authenticated %}
-  <nav class="mobile-nav">
-    <a href="{{ url_for('main.dashboard') }}" class="mobile-nav-item {% if request.endpoint == 'main.dashboard' %}active{% endif %}">
-      <span class="mobile-nav-icon">🏠</span>
-      <span class="mobile-nav-label">Home</span>
+  <!-- Mobile Top Navigation Strip (Horizontal pill bar at TOP) -->
+  {% if current_user.is_authenticated and request.endpoint != 'chat.conversation_view' %}
+  <nav class="mobile-top-nav">
+    <a href="{{ url_for('main.dashboard') }}" class="top-nav-tab {% if request.endpoint == 'main.dashboard' %}active{% endif %}">
+      <span>🏠 Dashboard</span>
     </a>
-    <a href="{{ url_for('chat.index') }}" class="mobile-nav-item {% if request.endpoint and request.endpoint.startswith('chat.') %}active{% endif %}">
-      <span class="mobile-nav-icon">💬</span>
-      <span class="mobile-nav-label">Chats</span>
+    <a href="{{ url_for('chat.index') }}" class="top-nav-tab {% if request.endpoint and request.endpoint.startswith('chat.') %}active{% endif %}">
+      <span>💬 Chats</span>
     </a>
-    <a href="{{ url_for('public_chat.index') }}" class="mobile-nav-item {% if request.endpoint and request.endpoint.startswith('public_chat.') %}active{% endif %}">
-      <span class="mobile-nav-icon">🌐</span>
-      <span class="mobile-nav-label">Square</span>
+    <a href="{{ url_for('public_chat.index') }}" class="top-nav-tab {% if request.endpoint and request.endpoint.startswith('public_chat.') %}active{% endif %}">
+      <span>🌐 Square</span>
     </a>
-    <a href="{{ url_for('dating.index') }}" class="mobile-nav-item {% if request.endpoint and request.endpoint.startswith('dating.') %}active{% endif %}">
-      <span class="mobile-nav-icon">💖</span>
-      <span class="mobile-nav-label">Dating</span>
+    <a href="{{ url_for('dating.index') }}" class="top-nav-tab {% if request.endpoint and request.endpoint.startswith('dating.') %}active{% endif %}">
+      <span>💖 Dating</span>
     </a>
-    <a href="{{ url_for('users.friends_page') }}" class="mobile-nav-item {% if request.endpoint == 'users.friends_page' %}active{% endif %}">
-      <span class="mobile-nav-icon">👥</span>
-      <span class="mobile-nav-label">Friends</span>
+    <a href="{{ url_for('users.friends_page') }}" class="top-nav-tab {% if request.endpoint == 'users.friends_page' %}active{% endif %}">
+      <span>👥 Friends</span>
     </a>
-    <a href="{{ url_for('users.profile') }}" class="mobile-nav-item {% if request.endpoint and request.endpoint.startswith('users.profile') %}active{% endif %}">
-      <span class="mobile-nav-icon">👤</span>
-      <span class="mobile-nav-label">Profile</span>
+    <a href="{{ url_for('users.search_page') }}" class="top-nav-tab {% if request.endpoint == 'users.search_page' %}active{% endif %}">
+      <span>🔍 Discover</span>
+    </a>
+    <a href="{{ url_for('users.profile') }}" class="top-nav-tab {% if request.endpoint and request.endpoint.startswith('users.profile') %}active{% endif %}">
+      <span>👤 Profile</span>
     </a>
   </nav>
   {% endif %}
