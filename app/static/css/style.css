@@ -729,6 +729,82 @@ img {
   z-index: 10;
 }
 
+/* Expandable Media Attachment Menu */
+.attachment-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.attachment-popover {
+  position: absolute;
+  bottom: calc(100% + 14px);
+  left: 0;
+  background: rgba(17, 24, 39, 0.96);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: var(--radius-lg);
+  padding: 0.65rem;
+  display: none;
+  flex-direction: column;
+  gap: 0.45rem;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.65), 0 0 20px rgba(99, 102, 241, 0.2);
+  z-index: 150;
+  min-width: 175px;
+  animation: popoverSlideUp 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.attachment-popover.open {
+  display: flex;
+}
+
+@keyframes popoverSlideUp {
+  0% {
+    opacity: 0;
+    transform: translateY(12px) scale(0.92);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.attachment-option {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.55rem 0.75rem;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-md);
+  color: var(--text-main);
+  font-size: 0.92rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.15s ease;
+  width: 100%;
+}
+
+.attachment-option:hover,
+.attachment-option:active {
+  background: rgba(255, 255, 255, 0.08);
+  transform: translateX(3px);
+}
+
+.attachment-option-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.15rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+  flex-shrink: 0;
+}
+
 .chat-input {
   flex: 1;
   background-color: var(--bg-input);

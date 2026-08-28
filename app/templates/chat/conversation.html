@@ -50,20 +50,30 @@
       <input type="file" id="chat-file-input" accept="image/png,image/jpeg,image/webp,image/gif" style="display:none;">
       <input type="file" id="chat-camera-input" accept="image/*" capture="environment" style="display:none;">
 
-      <!-- Mobile Camera Button -->
-      <button type="button" class="btn btn-secondary btn-round" title="Take Photo (Mobile Camera)" onclick="document.getElementById('chat-camera-input').click()">
-        📷
-      </button>
+      <!-- Attachment Menu Popover & Plus Toggle Button -->
+      <div class="attachment-wrapper">
+        <button type="button" id="chat-attach-toggle-btn" class="btn btn-secondary btn-round" title="Add Media" onclick="toggleAttachmentMenu(event)">
+          <span id="attach-icon" style="transition:transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1); display:inline-block; font-size:1.3rem; line-height:1;">➕</span>
+        </button>
 
-      <!-- Desktop Webcam Button -->
-      <button type="button" class="btn btn-secondary btn-round" id="chat-webcam-btn" title="Use Webcam (Desktop)">
-        📹
-      </button>
+        <!-- Expandable Attachment Menu -->
+        <div id="attachment-popover" class="attachment-popover">
+          <button type="button" class="attachment-option" onclick="document.getElementById('chat-camera-input').click(); closeAttachmentMenu();">
+            <div class="attachment-option-icon" style="background:linear-gradient(135deg, #ec4899, #f43f5e);">📷</div>
+            <span>Camera</span>
+          </button>
+          
+          <button type="button" class="attachment-option" onclick="document.getElementById('chat-file-input').click(); closeAttachmentMenu();">
+            <div class="attachment-option-icon" style="background:linear-gradient(135deg, #6366f1, #8b5cf6);">🖼️</div>
+            <span>Photos / Files</span>
+          </button>
 
-      <!-- Gallery Upload Button -->
-      <button type="button" class="btn btn-secondary btn-round" title="Upload Image File" onclick="document.getElementById('chat-file-input').click()">
-        🖼️
-      </button>
+          <button type="button" class="attachment-option" id="chat-webcam-option-btn" onclick="if(window.chatApp && window.chatApp.webcamManager) window.chatApp.webcamManager.open(); closeAttachmentMenu();">
+            <div class="attachment-option-icon" style="background:linear-gradient(135deg, #06b6d4, #3b82f6);">📹</div>
+            <span>Webcam</span>
+          </button>
+        </div>
+      </div>
 
       <!-- Text Input -->
       <input type="text" id="chat-input" class="chat-input" placeholder="Type an ephemeral message..." autocomplete="off">
@@ -128,13 +138,41 @@
 {% endblock %}
 
 {% block scripts %}
-<script src="{{ url_for('static', filename='js/webcam.js') }}?v=3.0"></script>
-<script src="{{ url_for('static', filename='js/chat.js') }}?v=3.0"></script>
+<script src="{{ url_for('static', filename='js/webcam.js') }}?v=4.0"></script>
+<script src="{{ url_for('static', filename='js/chat.js') }}?v=4.0"></script>
 <script>
   window.chatApp = new ChatApp({
     conversationId: "{{ conversation.id }}",
     currentUserId: "{{ current_user.id }}",
     recipientUsername: "{{ other_user.username }}"
+  });
+
+  function toggleAttachmentMenu(e) {
+    if (e) e.stopPropagation();
+    const popover = document.getElementById('attachment-popover');
+    const icon = document.getElementById('attach-icon');
+    if (popover) {
+      popover.classList.toggle('open');
+      if (popover.classList.contains('open')) {
+        if (icon) icon.style.transform = 'rotate(45deg)';
+      } else {
+        if (icon) icon.style.transform = 'rotate(0deg)';
+      }
+    }
+  }
+
+  function closeAttachmentMenu() {
+    const popover = document.getElementById('attachment-popover');
+    const icon = document.getElementById('attach-icon');
+    if (popover) popover.classList.remove('open');
+    if (icon) icon.style.transform = 'rotate(0deg)';
+  }
+
+  document.addEventListener('click', (e) => {
+    const wrapper = document.querySelector('.attachment-wrapper');
+    if (wrapper && !wrapper.contains(e.target)) {
+      closeAttachmentMenu();
+    }
   });
 </script>
 {% endblock %}
