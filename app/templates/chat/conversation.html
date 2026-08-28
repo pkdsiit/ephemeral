@@ -128,8 +128,8 @@
 {% endblock %}
 
 {% block scripts %}
-<script src="{{ url_for('static', filename='js/webcam.js') }}"></script>
-<script src="{{ url_for('static', filename='js/chat.js') }}"></script>
+<script src="{{ url_for('static', filename='js/webcam.js') }}?v=2.0"></script>
+<script src="{{ url_for('static', filename='js/chat.js') }}?v=2.0"></script>
 <script>
   const chatApp = new ChatApp({
     conversationId: "{{ conversation.id }}",
