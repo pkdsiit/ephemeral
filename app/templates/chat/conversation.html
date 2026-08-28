@@ -44,8 +44,8 @@
       @{{ other_user.username }} is typing...
     </div>
 
-    <!-- Chat Input Controls -->
-    <div class="chat-input-bar">
+    <!-- Chat Input Controls Form -->
+    <form class="chat-input-bar" id="chat-form" onsubmit="event.preventDefault(); if(window.chatApp) window.chatApp.sendTextMessage();">
       <!-- Hidden file inputs -->
       <input type="file" id="chat-file-input" accept="image/png,image/jpeg,image/webp,image/gif" style="display:none;">
       <input type="file" id="chat-camera-input" accept="image/*" capture="environment" style="display:none;">
@@ -69,10 +69,10 @@
       <input type="text" id="chat-input" class="chat-input" placeholder="Type an ephemeral message..." autocomplete="off">
 
       <!-- Send Button -->
-      <button type="button" id="chat-send-btn" class="btn btn-primary btn-round" title="Send Message">
+      <button type="submit" id="chat-send-btn" class="btn btn-primary btn-round" title="Send Message">
         ➤
       </button>
-    </div>
+    </form>
   </div>
 </div>
 
@@ -128,10 +128,10 @@
 {% endblock %}
 
 {% block scripts %}
-<script src="{{ url_for('static', filename='js/webcam.js') }}?v=2.0"></script>
-<script src="{{ url_for('static', filename='js/chat.js') }}?v=2.0"></script>
+<script src="{{ url_for('static', filename='js/webcam.js') }}?v=3.0"></script>
+<script src="{{ url_for('static', filename='js/chat.js') }}?v=3.0"></script>
 <script>
-  const chatApp = new ChatApp({
+  window.chatApp = new ChatApp({
     conversationId: "{{ conversation.id }}",
     currentUserId: "{{ current_user.id }}",
     recipientUsername: "{{ other_user.username }}"

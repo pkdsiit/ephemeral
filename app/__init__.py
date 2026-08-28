@@ -31,11 +31,10 @@ def create_app(config_name: str = None) -> Flask:
     ext.csrf.init_app(app)
     ext.limiter.init_app(app)
     
-    # Initialize SocketIO with multithreading support
+    # Initialize SocketIO
     ext.socketio.init_app(
         app,
         cors_allowed_origins="*",
-        async_mode='threading',
         manage_session=False,
         ping_timeout=20,
         ping_interval=25

@@ -32,14 +32,15 @@ class ChatApp {
 
   initSocket() {
     if (typeof io !== 'undefined') {
-      this.socket = io({ transports: ['websocket', 'polling'] });
+      try {
+        this.socket = io();
 
-      this.socket.on('connect', () => {
-        console.log("Connected to real-time server");
-        if (this.conversationId) {
-          this.socket.emit('join_conversation', { conversation_id: this.conversationId });
-        }
-      });
+        this.socket.on('connect', () => {
+          console.log("Connected to real-time server");
+          if (this.conversationId) {
+            this.socket.emit('join_conversation', { conversation_id: this.conversationId });
+          }
+        });
 
       this.socket.on('new_message', (msg) => {
         if (msg.conversation_id === this.conversationId) {
@@ -77,11 +78,14 @@ class ChatApp {
         }
       });
 
-      this.socket.on('user_stopped_typing', (data) => {
-        if (data.conversation_id === this.conversationId) {
-          if (this.typingIndicator) this.typingIndicator.style.display = 'none';
-        }
-      });
+        this.socket.on('user_stopped_typing', (data) => {
+          if (data.conversation_id === this.conversationId) {
+            if (this.typingIndicator) this.typingIndicator.style.display = 'none';
+          }
+        });
+      } catch (err) {
+        console.warn("Socket initialization skipped/failed:", err);
+      }
     }
   }
 
@@ -231,6 +235,10 @@ class ChatApp {
   }
 
   async sendTextMessage() {
+    if (!this.conversationId) {
+      if (typeof showToast === 'function') showToast("Conversation is not ready.", "error");
+      return;
+    }
     if (!this.messageInput) return;
     const text = this.messageInput.value.trim();
     if (!text) return;
@@ -251,15 +259,26 @@ class ChatApp {
         }
       } else {
         const data = await resp.json();
-        alert(data.error || "Failed to send message.");
+        if (typeof showToast === 'function') {
+          showToast(data.error || "Failed to send message.", "error");
+        } else {
+          alert(data.error || "Failed to send message.");
+        }
       }
     } catch (err) {
       console.error("Error sending message:", err);
-      alert("Failed to send message. Please check connection.");
+      if (typeof showToast === 'function') {
+        showToast("Failed to send message. Please check connection.", "error");
+      }
     }
   }
 
   async uploadImageFile(fileOrBlob, filename = 'image.jpg') {
+    if (!this.conversationId) {
+      if (typeof showToast === 'function') showToast("Conversation is not ready.", "error");
+      return;
+    }
+
     const formData = new FormData();
     formData.append('image', fileOrBlob, filename);
 
@@ -274,14 +293,21 @@ class ChatApp {
         if (result && result.data) {
           this.appendMessage(result.data);
           this.scrollToBottom();
+          if (typeof showToast === 'function') showToast("Ephemeral photo sent!", "success");
         }
       } else {
         const data = await resp.json();
-        alert(data.error || "Failed to send image.");
+        if (typeof showToast === 'function') {
+          showToast(data.error || "Failed to send image.", "error");
+        } else {
+          alert(data.error || "Failed to send image.");
+        }
       }
     } catch (err) {
       console.error("Error uploading image:", err);
-      alert("Image upload failed.");
+      if (typeof showToast === 'function') {
+        showToast("Image upload failed.", "error");
+      }
     }
   }
 

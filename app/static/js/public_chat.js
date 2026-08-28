@@ -18,27 +18,31 @@ class PublicChatApp {
 
   initSocket() {
     if (typeof io !== 'undefined') {
-      this.socket = io({ transports: ['websocket', 'polling'] });
+      try {
+        this.socket = io();
 
-      this.socket.on('connect', () => {
-        if (this.roomCode) {
-          this.socket.emit('join_public_room', { room_code: this.roomCode });
-        }
-      });
+        this.socket.on('connect', () => {
+          if (this.roomCode) {
+            this.socket.emit('join_public_room', { room_code: this.roomCode });
+          }
+        });
 
-      this.socket.on('new_public_message', (msg) => {
-        this.appendMessage(msg);
-        this.scrollToBottom();
-      });
+        this.socket.on('new_public_message', (msg) => {
+          this.appendMessage(msg);
+          this.scrollToBottom();
+        });
 
-      this.socket.on('public_message_deleted', (data) => {
-        const msgEl = document.getElementById(`pmsg-${data.message_id}`);
-        if (msgEl) {
-          msgEl.querySelector('.message-body').textContent = '[ Message deleted ]';
-          const actionBtn = msgEl.querySelector('.message-actions');
-          if (actionBtn) actionBtn.remove();
-        }
-      });
+        this.socket.on('public_message_deleted', (data) => {
+          const msgEl = document.getElementById(`pmsg-${data.message_id}`);
+          if (msgEl) {
+            msgEl.querySelector('.message-body').textContent = '[ Message deleted ]';
+            const actionBtn = msgEl.querySelector('.message-actions');
+            if (actionBtn) actionBtn.remove();
+          }
+        });
+      } catch (err) {
+        console.warn("Public socket init skipped/failed:", err);
+      }
     }
   }
 
@@ -111,6 +115,10 @@ class PublicChatApp {
   }
 
   async sendMessage() {
+    if (!this.roomCode) {
+      if (typeof showToast === 'function') showToast("Room code missing.", "error");
+      return;
+    }
     if (!this.messageInput) return;
     const text = this.messageInput.value.trim();
     if (!text) return;
@@ -131,11 +139,17 @@ class PublicChatApp {
         }
       } else {
         const data = await resp.json();
-        alert(data.error || "Failed to send message.");
+        if (typeof showToast === 'function') {
+          showToast(data.error || "Failed to send message.", "error");
+        } else {
+          alert(data.error || "Failed to send message.");
+        }
       }
     } catch (err) {
       console.error("Error sending public message:", err);
-      alert("Failed to send message. Please check connection.");
+      if (typeof showToast === 'function') {
+        showToast("Failed to send message. Please check connection.", "error");
+      }
     }
   }
 

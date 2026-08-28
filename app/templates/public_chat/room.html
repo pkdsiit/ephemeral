@@ -27,21 +27,21 @@
       <!-- Dynamically populated by public_chat.js -->
     </div>
 
-    <!-- Message Input Bar -->
-    <div class="chat-input-bar">
+    <!-- Message Input Bar Form -->
+    <form class="chat-input-bar" id="public-chat-form" onsubmit="event.preventDefault(); if(window.publicChatApp) window.publicChatApp.sendMessage();">
       <input type="text" id="public-input" class="chat-input" placeholder="Broadcast a message to #{{ room.name }}..." autocomplete="off">
-      <button type="button" id="public-send-btn" class="btn btn-primary btn-round" title="Send">
+      <button type="submit" id="public-send-btn" class="btn btn-primary btn-round" title="Send">
         ➤
       </button>
-    </div>
+    </form>
   </div>
 </div>
 {% endblock %}
 
 {% block scripts %}
-<script src="{{ url_for('static', filename='js/public_chat.js') }}?v=2.0"></script>
+<script src="{{ url_for('static', filename='js/public_chat.js') }}?v=3.0"></script>
 <script>
-  const publicChatApp = new PublicChatApp({
+  window.publicChatApp = new PublicChatApp({
     roomCode: "{{ room.code }}",
     currentUserId: "{{ current_user.id }}",
     isAdmin: {{ 'true' if current_user.is_admin else 'false' }}

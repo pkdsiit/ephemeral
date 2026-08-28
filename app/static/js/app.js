@@ -1,5 +1,33 @@
 // Global Application Scripts for Ephemeral Chat
 
+// Toast Notification System
+function showToast(message, type = 'info') {
+  let toastContainer = document.getElementById('toast-container');
+  if (!toastContainer) {
+    toastContainer = document.createElement('div');
+    toastContainer.id = 'toast-container';
+    toastContainer.style.cssText = 'position:fixed; top:20px; right:20px; z-index:99999; display:flex; flex-direction:column; gap:10px; max-width:360px; width:calc(100% - 40px); pointer-events:none;';
+    document.body.appendChild(toastContainer);
+  }
+
+  const toast = document.createElement('div');
+  const bg = type === 'success' ? '#10b981' : type === 'danger' || type === 'error' ? '#ef4444' : '#6366f1';
+  toast.style.cssText = `background:${bg}; color:#fff; padding:12px 18px; border-radius:10px; font-size:14px; font-weight:500; box-shadow:0 10px 25px rgba(0,0,0,0.3); pointer-events:auto; transition:all 0.3s ease; opacity:0; transform:translateY(-10px);`;
+  toast.textContent = message;
+
+  toastContainer.appendChild(toast);
+  requestAnimationFrame(() => {
+    toast.style.opacity = '1';
+    toast.style.transform = 'translateY(0)';
+  });
+
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    toast.style.transform = 'translateY(-10px)';
+    setTimeout(() => toast.remove(), 300);
+  }, 4000);
+}
+
 // Get CSRF Token from meta tag or cookie
 function getCsrfToken() {
   const metaTag = document.querySelector('meta[name="csrf-token"]');
@@ -8,7 +36,7 @@ function getCsrfToken() {
   return match ? match[1] : '';
 }
 
-// Fetch wrapper with CSRF headers
+// Fetch wrapper with CSRF headers & same-origin credentials
 async function fetchWithCsrf(url, options = {}) {
   const headers = options.headers || {};
   const token = getCsrfToken();
@@ -16,6 +44,7 @@ async function fetchWithCsrf(url, options = {}) {
     headers['X-CSRFToken'] = token;
   }
   options.headers = headers;
+  options.credentials = 'same-origin';
   return fetch(url, options);
 }
 
@@ -65,10 +94,11 @@ async function sendConnectionRequest(userId, username, btnElement) {
       if (btnElement) {
         btnElement.className = 'btn btn-sm btn-secondary';
         btnElement.textContent = 'Request Sent ✓';
+        btnElement.disabled = true;
       }
-      alert(`Connection request sent to @${username}!`);
+      showToast(`Connection request sent to @${username}!`, 'success');
     } else {
-      alert(data.error || "Failed to send connection request.");
+      showToast(data.error || "Failed to send connection request.", 'error');
       if (btnElement) {
         btnElement.disabled = false;
         btnElement.textContent = 'Connect';
@@ -76,7 +106,7 @@ async function sendConnectionRequest(userId, username, btnElement) {
     }
   } catch (err) {
     console.error("Error sending connection request:", err);
-    alert("Connection request failed. Please check network connection.");
+    showToast("Connection request failed. Please check network connection.", 'error');
     if (btnElement) {
       btnElement.disabled = false;
       btnElement.textContent = 'Connect';
@@ -87,10 +117,12 @@ async function sendConnectionRequest(userId, username, btnElement) {
 async function acceptFriend(id) {
   try {
     const resp = await fetchWithCsrf(`/api/friends/${id}/accept`, { method: 'POST' });
-    if (resp.ok) window.location.reload();
-    else {
+    if (resp.ok) {
+      showToast("Friend request accepted!", "success");
+      setTimeout(() => window.location.reload(), 500);
+    } else {
       const data = await resp.json();
-      alert(data.error || "Failed to accept request.");
+      showToast(data.error || "Failed to accept request.", "error");
     }
   } catch (err) {
     console.error(err);
@@ -100,10 +132,12 @@ async function acceptFriend(id) {
 async function rejectFriend(id) {
   try {
     const resp = await fetchWithCsrf(`/api/friends/${id}/reject`, { method: 'POST' });
-    if (resp.ok) window.location.reload();
-    else {
+    if (resp.ok) {
+      showToast("Request declined.", "info");
+      setTimeout(() => window.location.reload(), 500);
+    } else {
       const data = await resp.json();
-      alert(data.error || "Failed to decline request.");
+      showToast(data.error || "Failed to decline request.", "error");
     }
   } catch (err) {
     console.error(err);
@@ -116,8 +150,12 @@ async function blockUser(userId, username) {
   }
   try {
     const resp = await fetchWithCsrf(`/api/users/${userId}/block`, { method: 'POST' });
-    if (resp.ok) window.location.reload();
-    else alert("Failed to block user.");
+    if (resp.ok) {
+      showToast(`Blocked @${username}`, "info");
+      setTimeout(() => window.location.reload(), 500);
+    } else {
+      showToast("Failed to block user.", "error");
+    }
   } catch(err) {
     console.error(err);
   }
@@ -126,8 +164,12 @@ async function blockUser(userId, username) {
 async function unblockUser(userId) {
   try {
     const resp = await fetchWithCsrf(`/api/users/${userId}/unblock`, { method: 'POST' });
-    if (resp.ok) window.location.reload();
-    else alert("Failed to unblock user.");
+    if (resp.ok) {
+      showToast("User unblocked.", "success");
+      setTimeout(() => window.location.reload(), 500);
+    } else {
+      showToast("Failed to unblock user.", "error");
+    }
   } catch(err) {
     console.error(err);
   }
