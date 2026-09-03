@@ -1,69 +1,460 @@
+```html
 {% extends "base.html" %}
 
-{% block title %}Ephemeral — Temporary Communication by Design{% endblock %}
+{% block title %}Connect. Chat. Discover. — Ephemeral{% endblock %}
 
 {% block content %}
-<div class="hero">
-  <div class="badge badge-accent" style="margin-bottom:1rem; font-size:0.85rem; padding:0.4rem 0.9rem;">
-    ⚡ Privacy by Architecture • Zero Permanent Footprint
+
+<!-- HERO -->
+<section class="hero" style="padding: 5rem 1.5rem 4rem; text-align:center; max-width:950px; margin:0 auto;">
+
+  <div class="badge badge-accent"
+       style="display:inline-flex; align-items:center; gap:0.45rem;
+              margin-bottom:1.25rem; font-size:0.85rem;
+              padding:0.45rem 1rem;">
+    ✨ Private • Social • Interest-Based
   </div>
-  <h1>Messages that don't have to stay forever.</h1>
-  <p>
-    Experience truly temporary one-to-one messaging, self-destructing ephemeral images, public rooms, and private interest-based matchmaking — built from the ground up for modern privacy.
+
+  <h1 style="font-size:clamp(2.5rem, 6vw, 4.5rem);
+             line-height:1.05; letter-spacing:-0.04em;
+             margin-bottom:1.25rem;">
+    Meet people.<br>
+    <span style="color:var(--primary);">Start conversations.</span>
+  </h1>
+
+  <p style="max-width:700px; margin:0 auto 2rem;
+            color:var(--text-muted); font-size:1.15rem;
+            line-height:1.7;">
+    A modern social platform for chatting, discovering communities,
+    sharing interests, and meeting people who have something in common.
+    Use it your way — from public conversations to private chats and
+    optional dating.
   </p>
 
-  <div style="display:flex; justify-content:center; gap:1rem; flex-wrap:wrap;">
-    <a href="{{ url_for('auth.register') }}" class="btn btn-primary" style="padding:0.85rem 2rem; font-size:1.05rem;">
-      Start Chatting Free
+  <div style="display:flex; justify-content:center; gap:0.85rem;
+              flex-wrap:wrap;">
+
+    <a href="{{ url_for('auth.register') }}"
+       class="btn btn-primary"
+       style="padding:0.9rem 2rem; font-size:1.05rem;">
+      Create Your Account
     </a>
-    <a href="{{ url_for('auth.login') }}" class="btn btn-secondary" style="padding:0.85rem 1.75rem; font-size:1.05rem;">
+
+    <a href="{{ url_for('auth.login') }}"
+       class="btn btn-secondary"
+       style="padding:0.9rem 1.75rem; font-size:1.05rem;">
       Sign In
     </a>
-  </div>
-</div>
 
-<div class="feature-grid">
-  <div class="feature-box">
-    <div class="feature-icon">⏱️</div>
-    <h3 style="font-size:1.2rem; margin-bottom:0.5rem;">7-Day Auto Expiration</h3>
-    <p style="color:var(--text-muted); font-size:0.9rem;">
-      Every private message and public post expires and disappears after 7 days automatically. No unlimited permanent message archives.
-    </p>
   </div>
 
-  <div class="feature-box">
-    <div class="feature-icon">🔒</div>
-    <h3 style="font-size:1.2rem; margin-bottom:0.5rem;">One-Time Ephemeral Images</h3>
-    <p style="color:var(--text-muted); font-size:0.9rem;">
-      Send one-time photos via camera, file upload, or desktop webcam. Once viewed and replied to, files are physically erased from the server.
-    </p>
-  </div>
-
-  <div class="feature-box">
-    <div class="feature-icon">✨</div>
-    <h3 style="font-size:1.2rem; margin-bottom:0.5rem;">Privacy-First Dating</h3>
-    <p style="color:var(--text-muted); font-size:0.9rem;">
-      Optional adult-only matchmaking based on shared hobbies and compatibility. No exposed emails, phone numbers, or public indexes.
-    </p>
-  </div>
-
-  <div class="feature-box">
-    <div class="feature-icon">🛡️</div>
-    <h3 style="font-size:1.2rem; margin-bottom:0.5rem;">Strict Access Control</h3>
-    <p style="color:var(--text-muted); font-size:0.9rem;">
-      UUID identifiers, encrypted passwords, rate limiting, and zero predictable media paths keep your private interactions completely safe.
-    </p>
-  </div>
-</div>
-
-<footer style="margin-top:4rem; padding-top:2rem; border-top:1px solid var(--border-color); text-align:center; color:var(--text-muted); font-size:0.9rem;">
-  <div style="display:flex; justify-content:center; align-items:center; gap:1.5rem; margin-bottom:1rem; flex-wrap:wrap;">
-    <a href="{{ url_for('main.about') }}" style="color:var(--text-main); font-weight:600;">About Us</a>
-    <a href="{{ url_for('main.about') }}" style="color:var(--text-main); font-weight:600;">Contact</a>
-    <a href="mailto:contact@codehypetech.in" style="color:var(--primary); font-weight:600;">contact@codehypetech.in</a>
-  </div>
-  <p style="font-size:0.82rem; color:var(--text-dim);">
-    © 2026 Ephemeral. Built with curiosity by Priyanshu Kumar.
+  <p style="margin-top:1rem; font-size:0.8rem;
+            color:var(--text-dim);">
+    Free to join • Privacy-focused • 18+ dating features
   </p>
+
+</section>
+
+
+<!-- PRODUCT MODES -->
+<section style="max-width:1100px; margin:0 auto; padding:1rem 1.5rem 4rem;">
+
+  <div style="text-align:center; margin-bottom:2.5rem;">
+    <h2 style="font-size:2rem; margin-bottom:0.6rem;">
+      One platform, different ways to connect
+    </h2>
+
+    <p style="color:var(--text-muted); max-width:650px; margin:auto;">
+      Whether you want to join a conversation, find people with similar
+      interests, or build a meaningful connection, choose the experience
+      that fits you.
+    </p>
+  </div>
+
+
+  <div class="feature-grid">
+
+    <!-- PUBLIC CHAT -->
+    <div class="feature-box"
+         style="padding:1.75rem;">
+
+      <div class="feature-icon"
+           style="font-size:2rem; margin-bottom:0.8rem;">
+        💬
+      </div>
+
+      <h3 style="font-size:1.25rem; margin-bottom:0.6rem;">
+        Public Chatrooms
+      </h3>
+
+      <p style="color:var(--text-muted); font-size:0.92rem;
+                line-height:1.65;">
+        Join topic-based rooms and take part in conversations with
+        people who share your interests. Discover new communities and
+        start conversations naturally.
+      </p>
+
+    </div>
+
+
+    <!-- INTERESTS -->
+    <div class="feature-box"
+         style="padding:1.75rem;">
+
+      <div class="feature-icon"
+           style="font-size:2rem; margin-bottom:0.8rem;">
+        🌎
+      </div>
+
+      <h3 style="font-size:1.25rem; margin-bottom:0.6rem;">
+        Discover by Interest
+      </h3>
+
+      <p style="color:var(--text-muted); font-size:0.92rem;
+                line-height:1.65;">
+        Tell us what you enjoy — from technology and music to gaming,
+        books, fitness, travel, and more — and discover conversations
+        around the things you actually care about.
+      </p>
+
+    </div>
+
+
+    <!-- PRIVATE CHAT -->
+    <div class="feature-box"
+         style="padding:1.75rem;">
+
+      <div class="feature-icon"
+           style="font-size:2rem; margin-bottom:0.8rem;">
+        🔐
+      </div>
+
+      <h3 style="font-size:1.25rem; margin-bottom:0.6rem;">
+        Private Conversations
+      </h3>
+
+      <p style="color:var(--text-muted); font-size:0.92rem;
+                line-height:1.65;">
+        Move conversations into private chats when you want a more
+        personal space. Your contact details aren't publicly displayed.
+      </p>
+
+    </div>
+
+
+    <!-- DATING -->
+    <div class="feature-box"
+         style="padding:1.75rem;">
+
+      <div class="feature-icon"
+           style="font-size:2rem; margin-bottom:0.8rem;">
+        ❤️
+      </div>
+
+      <h3 style="font-size:1.25rem; margin-bottom:0.6rem;">
+        Optional Dating Mode
+      </h3>
+
+      <p style="color:var(--text-muted); font-size:0.92rem;
+                line-height:1.65;">
+        Looking for something more personal? Enable dating mode and
+        discover compatible adults based on shared interests and
+        preferences.
+      </p>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- PRIVACY SECTION -->
+<section style="max-width:1050px; margin:0 auto; padding:2rem 1.5rem 4rem;">
+
+  <div style="
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+      gap:2rem;
+      align-items:center;
+      padding:2.5rem;
+      border:1px solid var(--border-color);
+      border-radius:1.25rem;
+      background:var(--surface-color, transparent);
+  ">
+
+    <div>
+
+      <div class="badge"
+           style="display:inline-block; margin-bottom:1rem;">
+        🔒 Privacy by Design
+      </div>
+
+      <h2 style="font-size:2rem; line-height:1.2;
+                 margin-bottom:0.8rem;">
+        Social without oversharing.
+      </h2>
+
+      <p style="color:var(--text-muted); line-height:1.7;">
+        Your profile and conversations are designed with privacy in
+        mind. You decide what information you share and how you use
+        the platform.
+      </p>
+
+    </div>
+
+
+    <div style="display:grid; gap:1rem;">
+
+      <div style="display:flex; gap:0.8rem; align-items:flex-start;">
+        <span style="font-size:1.3rem;">🛡️</span>
+
+        <div>
+          <strong>Protected accounts</strong>
+          <p style="margin:0.25rem 0 0;
+                    color:var(--text-muted); font-size:0.88rem;">
+            Secure authentication and controlled access.
+          </p>
+        </div>
+      </div>
+
+
+      <div style="display:flex; gap:0.8rem; align-items:flex-start;">
+        <span style="font-size:1.3rem;">👤</span>
+
+        <div>
+          <strong>Control your profile</strong>
+          <p style="margin:0.25rem 0 0;
+                    color:var(--text-muted); font-size:0.88rem;">
+            Share only the information you are comfortable making
+            available.
+          </p>
+        </div>
+      </div>
+
+
+      <div style="display:flex; gap:0.8rem; align-items:flex-start;">
+        <span style="font-size:1.3rem;">⏳</span>
+
+        <div>
+          <strong>Temporary content options</strong>
+          <p style="margin:0.25rem 0 0;
+                    color:var(--text-muted); font-size:0.88rem;">
+            Certain messages and media can automatically expire.
+          </p>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- HOW IT WORKS -->
+<section style="max-width:1050px; margin:0 auto; padding:1rem 1.5rem 4rem;">
+
+  <div style="text-align:center; margin-bottom:2.5rem;">
+
+    <h2 style="font-size:2rem; margin-bottom:0.6rem;">
+      Getting started is simple
+    </h2>
+
+    <p style="color:var(--text-muted);">
+      Create your profile and choose how you want to connect.
+    </p>
+
+  </div>
+
+
+  <div style="
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+      gap:1.5rem;
+  ">
+
+    <div style="text-align:center; padding:1rem;">
+      <div style="
+          width:48px;
+          height:48px;
+          margin:0 auto 1rem;
+          border-radius:50%;
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          background:var(--primary);
+          color:white;
+          font-weight:700;
+      ">
+        1
+      </div>
+
+      <h3>Create your profile</h3>
+
+      <p style="color:var(--text-muted); font-size:0.9rem;">
+        Set up your account and choose the interests that represent you.
+      </p>
+    </div>
+
+
+    <div style="text-align:center; padding:1rem;">
+      <div style="
+          width:48px;
+          height:48px;
+          margin:0 auto 1rem;
+          border-radius:50%;
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          background:var(--primary);
+          color:white;
+          font-weight:700;
+      ">
+        2
+      </div>
+
+      <h3>Join conversations</h3>
+
+      <p style="color:var(--text-muted); font-size:0.9rem;">
+        Explore public rooms and connect around shared interests.
+      </p>
+    </div>
+
+
+    <div style="text-align:center; padding:1rem;">
+      <div style="
+          width:48px;
+          height:48px;
+          margin:0 auto 1rem;
+          border-radius:50%;
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          background:var(--primary);
+          color:white;
+          font-weight:700;
+      ">
+        3
+      </div>
+
+      <h3>Connect privately</h3>
+
+      <p style="color:var(--text-muted); font-size:0.9rem;">
+        Continue conversations privately when you find someone
+        interesting.
+      </p>
+    </div>
+
+
+    <div style="text-align:center; padding:1rem;">
+      <div style="
+          width:48px;
+          height:48px;
+          margin:0 auto 1rem;
+          border-radius:50%;
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          background:var(--primary);
+          color:white;
+          font-weight:700;
+      ">
+        4
+      </div>
+
+      <h3>Choose your experience</h3>
+
+      <p style="color:var(--text-muted); font-size:0.9rem;">
+        Enable dating mode when you're ready to discover compatible
+        people.
+      </p>
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- FINAL CTA -->
+<section style="
+    text-align:center;
+    max-width:850px;
+    margin:0 auto;
+    padding:3rem 1.5rem 5rem;
+">
+
+  <h2 style="
+      font-size:clamp(2rem,4vw,3rem);
+      margin-bottom:0.8rem;
+  ">
+    Your next conversation could be interesting.
+  </h2>
+
+  <p style="
+      color:var(--text-muted);
+      max-width:600px;
+      margin:0 auto 1.5rem;
+      line-height:1.7;
+  ">
+    Join the community, discover people with similar interests,
+    and start connecting.
+  </p>
+
+  <a href="{{ url_for('auth.register') }}"
+     class="btn btn-primary"
+     style="padding:0.9rem 2rem; font-size:1.05rem;">
+    Get Started
+  </a>
+
+</section>
+
+
+<!-- FOOTER -->
+<footer style="
+    margin-top:1rem;
+    padding:2rem 1.5rem;
+    border-top:1px solid var(--border-color);
+    text-align:center;
+    color:var(--text-muted);
+    font-size:0.9rem;
+">
+
+  <div style="
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      gap:1.5rem;
+      margin-bottom:1rem;
+      flex-wrap:wrap;
+  ">
+
+    <a href="{{ url_for('main.about') }}"
+       style="color:var(--text-main); font-weight:600;">
+      About
+    </a>
+
+    <a href="{{ url_for('main.about') }}"
+       style="color:var(--text-main); font-weight:600;">
+      Contact
+    </a>
+
+    <a href="mailto:contact@codehypetech.in"
+       style="color:var(--primary); font-weight:600;">
+      contact@codehypetech.in
+    </a>
+
+  </div>
+
+  <p style="
+      font-size:0.78rem;
+      color:var(--text-dim);
+      margin:0;
+  ">
+    © 2026 Ephemeral. All rights reserved.
+  </p>
+
 </footer>
+
 {% endblock %}
+```
